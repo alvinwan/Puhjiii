@@ -1,0 +1,10 @@
+# Environ
+env/
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# IDE
+*.iml
+.idea/
