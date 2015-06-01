@@ -1,4 +1,4 @@
-from server.models import *
+from server.mod_auth.models import Role
 
 roles = [
 	('owner', ['access_nest']),

@@ -3,3 +3,5 @@ flask-mongoengine==0.7.1
 pytest==2.7.1
 flask-login==0.2.11
 beautifulsoup4==4.3.2
+flask-bcrypt==0.6.2
+markdown==2.6.2

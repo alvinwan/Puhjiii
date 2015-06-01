@@ -15,9 +15,9 @@ Now, Puhjee is an *extremely* lightweight CMS. Truth be told, it's not built to 
 4. Install all requirements `pip install -r requirements.txt`.
 5. Create a new directory for the datastore `mkdir env/db`.
 6. Launch the server daemon `mongod --dbpath env/db`.
-7. Launch the server itself `python3 run_server.py`.
+7. In a new console, launch the server itself `env/bin/python run_server.py`.
 
-> To ensure that the system works as promised, run tests using `py.test tests`.
+> To ensure that the system works as promised, run tests using `env/bin/py.test tests`.
 
 ##Puhjee Features
 Here are existing features, packed into this tiny program:
