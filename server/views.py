@@ -1,9 +1,10 @@
-import markdown
-from flask import render_template, Markup
+import markdown as mkd
+from html import unescape
+from flask import render_template, render_template_string, make_response, Markup
 from jinja2.exceptions import TemplatesNotFound, TemplateNotFound, UndefinedError
 
 
-def render(name, mod=None, **context):
+def render(name, mod=None, repeats=0, markdown=True, **context):
 	"""
 	Render a template.
 	:param name: template
@@ -12,10 +13,14 @@ def render(name, mod=None, **context):
 	:return: flask render_template
 	"""
 	name = filename(name, mod)
-	for k, v in context.items():
-		if isinstance(v, str):
-			context[k] = Markup(markdown.markdown(v))
-	return render_template(name, **context)
+	if markdown:
+		for k, v in context.items():
+			if isinstance(v, str):
+				context[k] = Markup(mkd.markdown(v))
+	html = render_template(name, **context)
+	for i in range(repeats):
+		html = render_template_string(unescape(html), **context)
+	return make_response(html)
 
 
 def filename(name, mod):

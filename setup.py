@@ -1,15 +1,15 @@
 from server.mod_auth.models import Role
 
 roles = [
-	('owner', ['access_nest']),
-	('manager', ['access_nest']),
-	('developer', ['access_nest']),
+	('owner', ['access_nest', 'view_templates', 'modify_templates']),
+	('manager', ['access_nest', 'view_templates', 'modify_templates']),
+	('developer', ['access_nest', 'view_templates', 'modify_templates']),
 	('follower', ['access_nest'])
 ]
 
 
 def build():
-	global roles
+	global roles, plugins
 	add_roles(prepare_roles(roles))
 	print('Build complete.')
 
@@ -25,7 +25,13 @@ def prepare_roles(roles):
 
 
 def add_roles(roles):
-	Role.objects.insert(roles)
+	for role in roles:
+		Role.objects(name=role.name).modify(
+			upsert=True,
+			new=True,
+			set__name=role.name,
+			set__permissions=role.permissions)
+
 
 import argparse
 

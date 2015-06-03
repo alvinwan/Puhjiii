@@ -1,5 +1,6 @@
 import server.mod_auth.models as models
 
+
 class Puhjee:
 	"""
 	base class for all savable objects

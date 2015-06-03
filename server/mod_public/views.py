@@ -20,7 +20,7 @@ def items(items_name):
 	return render(path, mod='public', **itms)
 
 
-@mod_public.route("/<string:item_name>/<int:id>")
+@mod_public.route("/<string:item_name>/<int:item_id>")
 def item(item_name, item_id):
 	path, itms = Item.item(item_name, item_id)
 	return render(path, mod='public', **itms)

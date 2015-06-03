@@ -25,15 +25,21 @@ class Role(Puhjee):
 class Allow:
 
 	@staticmethod
-	def ed(user, permission):
+	def ed(user, permissions):
 		"""
 		Handles permissions, checks if user's role has said permission
 		:param user: current_user
-		:param permission: the string permission name to check for
+		:param permission: the string permission name to check for, or a list of all requirements
 		:return: boolean
 		"""
-		if not user.is_authenticated() or \
+		if not user or \
+			not user.is_authenticated() or \
 			not hasattr(user, 'role'):
 			return False
 		role = Role(id=user.role.id).get()
-		return permission in role.permissions
+		if isinstance(permissions, list):
+			for permission in permissions:
+				if permission not in role.permissions:
+					return False
+			return True
+		return permissions in role.permissions

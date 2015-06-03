@@ -2,6 +2,7 @@ from flask import render_template
 from server.mod_public import models
 from server.libs import Puhjee
 
+
 class Page(Puhjee):
 	pass
 
@@ -9,21 +10,21 @@ class Page(Puhjee):
 class Item(Puhjee):
 
 	@staticmethod
-	def item(item_name, id):
+	def item(item_name, item_id):
 		"""
 		Fetches item object from the database, and returns
 		the appropriate
-		:param item:
-		:param id:
+		:param item_name:
+		:param item_id:
 		:return:
 		"""
 		dct = {}
-		if isinstance(id, int):
-			dct['id'] = str(id)
-		elif isinstance(id, str):
-			dct['slug'] = id
+		if isinstance(item_id, int):
+			dct['id'] = str(item_id)
+		elif isinstance(item_id, str):
+			dct['slug'] = item_id
 		obj = Item(**dct)
-		if obj.page is not None:
+		if hasattr(obj, 'page'):
 			item_name = Page(obj.page).path
 		return item_name+'.html', {'item': obj}
 	
