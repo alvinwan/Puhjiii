@@ -3,8 +3,6 @@ from server.mod_auth.libs import Allow
 import config
 from os import listdir, environ
 from os.path import isdir, join, dirname as parent
-
-from bs4 import BeautifulSoup
 	
 	
 class Nest:
@@ -33,12 +31,7 @@ class Nest:
 		"""
 		kwargs['user'] = user
 		try:
-			plugin = {
-				'preview': lambda: Plugin(
-					'preview',
-					requires='modify_templates',
-					**kwargs)
-			}[choice]()
+			plugin = Plugin(choice, **kwargs)
 		except KeyError:
 			plugin = Plugin('preview', **kwargs)
 		self.section = self.include_partial(plugin.partial)
@@ -50,13 +43,7 @@ class Nest:
 		"""
 		kwargs['user'] = user
 		try:
-			plugin = {
-				'navfiles': lambda: Plugin(
-					'navfiles',
-					requires='view_templates',
-				    **kwargs
-				)
-			}[choice]()
+			plugin = Plugin(choice, **kwargs)
 		except KeyError:
 			plugin = Plugin('navbar', type='main')
 		self.aside = self.include_partial(plugin.partial)
@@ -78,10 +65,7 @@ class Plugin:
 		'preview': {
 			'partial': 'preview.html',
 			'process': lambda self: {
-				'src': preview(
-					self.path,
-					getattr(self, 'request', None)
-				)
+				'src': preview(self)
 			}
 		},
 	    'navbar': {
@@ -89,6 +73,7 @@ class Plugin:
 	        'process': lambda self: {
 		        'links': [
 			        {'href': '/nest/templates', 'label': 'templates'},
+			        {'href': '/nest/urls', 'label': 'urls'},
 			        {'href': '/nest/items', 'label': 'items'},
 			        {'href': '/nest/settings', 'label': 'settings'},
 			        {'href': '/logout', 'label': 'logout'}
@@ -97,9 +82,32 @@ class Plugin:
 	    },
 	    'navfiles': {
 		    'partial': 'navfiles.html',
-		    'process': lambda self: {
-				'links': nav_files(self.path)
-		    }
+		    'process': lambda self: nav_files(self)
+	    },
+	    'types': {
+		    'partial': 'types.html',
+	        'process': lambda self: types()
+	    },
+	    'type_add': {
+		    'partial': 'type_add.html',
+	        'process': lambda self: {}
+	    },
+	    'item_add': {
+		    'partial': 'item_add.html',
+	        'process': lambda self: {}
+		    
+	    },
+	    'items': {
+		    'partial': 'navitems.html',
+	        'process': lambda self: items(self)
+	    },
+	    'urls': {
+		    'partial': 'navurls.html',
+	        'process': lambda self: urls()
+	    },
+	    'url_add': {
+		    'partial': 'url_add.html',
+		    'process': lambda self: {}
 	    }
 	}
 	
@@ -115,10 +123,7 @@ class Plugin:
 			return
 		for k, v in kwargs.items():
 			setattr(self, k, v)
-		try:
-			self.load_plugin(plugin)
-		except KeyError:
-			self.load_plugin('navbar')
+		self.load_plugin(plugin)
 			
 	def load_plugin(self, plugin):
 		"""
@@ -128,12 +133,13 @@ class Plugin:
 		self.context = self._defaults[plugin]['process'](self)
 			
 			
-def preview(path, request):
+def preview(obj):
 	"""
 	Adds path prefix, if the string is not a URI
 	:param path: candidate path
 	:return: new string
 	"""
+	path, request = obj.path, getattr(obj, 'request', None)
 	API = '/nest/api/template'
 	if request:
 		parse = urlparse(request.url)
@@ -151,12 +157,13 @@ def preview(path, request):
 	return path
 
 
-def nav_files(path):
+def nav_files(obj):
 	"""
 	Fetches all files in the specified path.
 	:param path: 
 	:return:
 	"""
+	path = obj.path
 	links = []
 	if len(urlparse(path).scheme) == 0:
 		path = path or ''
@@ -166,7 +173,8 @@ def nav_files(path):
 		if path and len(parent(path)) > 0:
 			links.append(dict(
 				href=url_path(parent(path)),
-			    label='back'
+			    label='parent',
+			    fa='fa-mail-reply'
 			))
 		for thing in listdir(abs_path(rel_dir)):
 			file = dict(
@@ -177,4 +185,30 @@ def nav_files(path):
 				file['href'] += '/'
 				file['fa'] = 'fa-folder'
 			links.append(file)
-	return links
+	return dict(links=links)
+
+
+from server.mod_public.libs import Type, Item
+
+
+def types():
+	types = Type.types()
+	for type in types:
+		type.href = '/nest/item/%s' % type.name
+	return locals()
+
+
+def items(obj):
+	type, item_type = obj.type, obj.item_type
+	items = Item.items(item_type, type=type, raw=True)
+	return dict(type=item_type, items=items)
+
+from server.mod_public.libs import URL
+
+
+def urls():
+	urls =  URL().model().objects().all()
+	for url in urls:
+		url.label = url.title
+		url.href = "/nest/url/"+url.url
+	return locals()

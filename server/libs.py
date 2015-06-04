@@ -1,4 +1,5 @@
-import server.mod_auth.models as models
+import server.mod_auth.models as models_auth
+import server.mod_public.models as models_public
 
 
 class Puhjee:
@@ -25,7 +26,10 @@ class Puhjee:
 		:param cls: classname
 		:return: model.class
 		"""
-		return getattr(models, cls.__name__)
+		for model in [models_auth, models_public]:
+			if hasattr(model, cls.__name__):
+				return getattr(model, cls.__name__)
+		raise UserWarning('Model not found')
 	
 	def get(self):
 		"""

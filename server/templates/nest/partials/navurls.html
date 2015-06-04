@@ -1,0 +1,10 @@
+<a href="/nest/">main</a>
+<a href="/nest/url/add">add URL</a>
+<nav>
+    <ul>
+        {% for url in urls %}
+        <li><a href="{{url.href}}">{{url.label}}</a></li>
+        {% endfor %}
+    </ul>
+</nav>
+{% include "nest/partials/formpanel.html" %}

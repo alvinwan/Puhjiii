@@ -1,0 +1,10 @@
+<a href="/nest/items">back</a>
+<a href="/nest/item/{{item_type}}/add">new {{item_type}}</a>
+<nav>
+    <ul>
+        {% for item in items %}
+            <li><a href="{{item.href}}">{{item.info.title}}<span>{{item.info.content}}</span></a></li>
+        {% endfor %}
+    </ul>
+</nav>
+{% include "nest/partials/formpanel.html" %}

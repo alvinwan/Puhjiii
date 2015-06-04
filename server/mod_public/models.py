@@ -2,20 +2,22 @@ from server import db
 from server.mod_auth.models import User
 
 
-class Page(db.Document):
-	name = db.StringField()
-	path = db.StringField()
-	properties = db.DictField()
+class URL(db.Document):
+	title = db.StringField()
+	template = db.StringField()
+	url = db.StringField(unique=True)
+	info = db.DictField()
 
 
-class Partial(db.Document):
-	name = db.StringField()
-	path = db.StringField()
+class Type(db.Document):
+	name = db.StringField(unique=True)
+	info = db.DictField()
+	page = db.StringField()
+	template = db.StringField()
+	partial = db.StringField()
 
 
 class Item(db.Document):
+	type = db.ReferenceField(Type)
 	author = db.ReferenceField(User)
-	page = db.ReferenceField(Page)
-	partial = db.ReferenceField(Partial)
-	data = db.DictField()
-	type = db.StringField
+	info = db.DictField()

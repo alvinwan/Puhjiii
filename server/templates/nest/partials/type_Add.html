@@ -1,0 +1,12 @@
+<a href="/nest/items">back</a>
+<nav>
+    <ul>
+        <form method="POST" action="/nest/type/add">
+            {% for k, v in form._fields.items() %}
+            <div>{{ v.label }}: {{ v() }}</div>
+            {% endfor %}
+            <input type="submit">
+            {{ message }}
+        </form>
+    </ul>
+</nav>

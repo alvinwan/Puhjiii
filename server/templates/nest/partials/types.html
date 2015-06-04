@@ -1,0 +1,9 @@
+<a href="/nest/">main</a>
+<a href="/nest/type/add">new type</a>
+<nav>
+    <ul>
+        {% for type in types %}
+        <li><a href="{{type.href}}">{{type.name}}</a></li>
+        {% endfor %}
+    </ul>
+</nav>

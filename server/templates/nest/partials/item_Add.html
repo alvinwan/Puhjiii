@@ -1,0 +1,12 @@
+<a href="/nest/item/{{item_type}}">cancel</a>
+<nav>
+    <ul>
+        <form method="POST" action="/nest/item/{{item_type}}/add">
+            {% for k, v in form._fields.items() %}
+            <div>{{ v.label }}: {{ v() }}</div>
+            {% endfor %}
+            <input type="submit">
+            {{ message }}
+        </form>
+    </ul>
+</nav>
