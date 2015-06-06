@@ -2,6 +2,4 @@
 {% for k, v in form._fields.items() %}
 <div>{{ v.label }}: {{ v() }}</div>
 {% endfor %}
-{% else %}
-Click on a URL to edit it
 {% endif %}

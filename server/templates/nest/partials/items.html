@@ -1,5 +1,6 @@
 <a href="/nest/items">back</a>
 <a href="/nest/item/{{item_type}}/add">new {{item_type}}</a>
+<a href="/nest/type/{{item_type}}/edit">edit {{item_type}}s template</a>
 <nav>
     <ul>
         {% for item in items %}
@@ -7,4 +8,4 @@
         {% endfor %}
     </ul>
 </nav>
-{% include "nest/partials/formpanel.html" %}
+{% include "nest/partials/form.html" %}

@@ -1,11 +1,16 @@
 import server.mod_auth.models as models_auth
 import server.mod_public.models as models_public
+import server.mod_nest.models as models_nest
+
+from bson import ObjectId
 
 
 class Puhjee:
 	"""
 	base class for all savable objects
 	"""
+	
+	filters = {}
 	
 	def __init__(self, **kwargs):
 		self.load(**kwargs)
@@ -26,10 +31,10 @@ class Puhjee:
 		:param cls: classname
 		:return: model.class
 		"""
-		for model in [models_auth, models_public]:
+		for model in [models_auth, models_public, models_nest]:
 			if hasattr(model, cls.__name__):
 				return getattr(model, cls.__name__)
-		raise UserWarning('Model not found')
+		raise UserWarning('Model not found: %s' % cls.__name__)
 	
 	def get(self):
 		"""
@@ -38,7 +43,7 @@ class Puhjee:
 		"""
 		self.result = self.__class__._get(**self.data())
 		data = Puhjee._data(self, self.result)
-		return self.__class__(**data)
+		return self.load(**data)
 	
 	@classmethod
 	def _get(cls, **kwargs):
@@ -57,18 +62,22 @@ class Puhjee:
 		Save object with it's data to database
 		:return: self
 		"""
-		mod = self.model()
-		self.result = mod(**self.data()).save()
+		self.result = self.model()(**self.data()).save()
 		data = Puhjee._data(self, self.result)
-		return self.load(**data)
+		return self.__class__(**data)
 		
 	def load(self, **kwargs):
 		"""
 		Save all passed-in data to object
+		- convert all ID objects and strings into ObjectIds
 		:param kwargs: data
 		:return: self
 		"""
 		for k, v in kwargs.items():
+			if k == 'id' and not isinstance(v, (bytes, str, ObjectId)):
+				v = getattr(v, 'id', None)
+			if isinstance(v, Puhjee):
+				v = v.model()(**v.data()).to_dbref()
 			setattr(self, k, v)
 		return self	
 		

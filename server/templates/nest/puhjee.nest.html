@@ -2,9 +2,4 @@
 {% if current_user.is_authenticated() %}
 Hi {{ current_user.name }}!
 {% endif %}
-<aside>
-    {{nest.aside}}
-</aside>
-<section>
-    {{nest.section}}
-</section>
+{{nest.panels}}

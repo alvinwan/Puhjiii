@@ -2,9 +2,7 @@
 <nav>
     <ul>
         <form method="POST" action="/nest/url/add">
-            {% for k, v in form._fields.items() %}
-            <div>{{ v.label }}: {{ v() }}</div>
-            {% endfor %}
+            {% include "nest/partials/form.html" %}
             <input type="submit">
             {{ message }}
         </form>

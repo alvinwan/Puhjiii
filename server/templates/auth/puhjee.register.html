@@ -3,5 +3,7 @@
     <div>{{ form.email.label }}: {{ form.email() }}</div>
     <div>{{ form.password.label }}: {{ form.password(type='password') }}</div>
     <input type="submit">
+    {% if message %}
     {{ message }}
+    {% endif %}
 </form>

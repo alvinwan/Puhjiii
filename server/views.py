@@ -1,7 +1,9 @@
 import markdown as mkd
 from html import unescape
-from flask import render_template, render_template_string, make_response, Markup
+from flask_login import current_user
+from flask import render_template, render_template_string, make_response, Markup, redirect
 from jinja2.exceptions import TemplatesNotFound, TemplateNotFound, UndefinedError
+from server.mod_auth.libs import Allow
 
 
 def render(name, mod=None, repeats=0, markdown=True, **context):
@@ -21,6 +23,15 @@ def render(name, mod=None, repeats=0, markdown=True, **context):
 	for i in range(repeats):
 		html = render_template_string(unescape(html), **context)
 	return make_response(html)
+
+
+def render_error(message):
+	"""
+	Returns a custom error page.
+	:param message: error message
+	:return: response
+	"""
+	return message
 
 
 def filename(name, mod):
@@ -49,3 +60,32 @@ def modded(name, mod):
 	:return: string path
 	"""
 	return name if mod is None else mod+'/'+name
+
+
+def permission_required(permission=None, dest='/'):
+	"""
+	Decorator for view functions
+	Use like so: @permission_required('access_nest')
+	Lists are acceptable: @permission_required(['access_nest', 'view_templates'])
+	:param permission: string or list of strings
+	:param dest: 
+	:return: decorator
+	"""
+	def decorator(f):
+		def helper():
+			if not Allow.ed(current_user, permission):
+				return redirect(dest)
+			return f()
+		return helper
+	return decorator
+
+
+def context_preset(nest):
+	context = {
+		'repeats': 1,
+		'markdown': False,
+		'nest': nest,
+		'mod': 'nest'
+	}
+	context.update(nest.context)
+	return context

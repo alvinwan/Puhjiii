@@ -13,9 +13,4 @@ class User(db.Document):
 	password = db.StringField()
 	role = db.ReferenceField(Role)
 	created_at = db.DateTimeField(default=datetime.datetime.now)
-	suspended = db.BooleanField(default=False)
-	
-
-class Plugin(db.Document):
-	name = db.StringField()
-	data = db.DictField()
+	is_suspended = db.BooleanField(default=False)

@@ -5,17 +5,14 @@ from server.libs import Puhjee
 from wtforms import fields as wtf
 from bson import ObjectId
 
-from os.path import join, isdir
+from os.path import join
 from bs4 import BeautifulSoup, element
-
-class Page(Puhjee):
-	pass
 
 
 class Item(Puhjee):
 
 	@staticmethod
-	def item(item_name, item_id):
+	def item(item_name, item_id=None, item_slug=None):
 		"""
 		Fetches item object from the database, and returns
 		the appropriate
@@ -24,14 +21,14 @@ class Item(Puhjee):
 		:return:
 		"""
 		dct = {}
-		if isinstance(item_id, int):
-			dct['id'] = str(item_id)
-		elif isinstance(item_id, str):
-			dct['slug'] = item_id
-		obj = Item(**dct)
+		if item_id:
+			dct['id'] = ObjectId(item_id)
+		elif item_slug:
+			dct['slug'] = item_slug
+		obj = Item(**dct).get()
 		if hasattr(obj, 'page'):
-			item_name = Page(obj.page).path
-		return item_name+'.html', {'item': obj}
+			item_name = URL(obj.page).path
+		return item_name+'.html', {item_name: obj}
 	
 	@staticmethod
 	def items(item_name, type=None, template='public/{items_name}.html',
@@ -42,8 +39,7 @@ class Item(Puhjee):
 		:return:
 		"""
 		items_name = item_name + 's'
-		if not type:
-			type = models.Type.objects(name=item_name).first()
+		type = type or models.Type.objects(name=item_name).first()
 		if not type:
 			return template, {'items': 'No such item'}
 		items = models.Item.objects(type=ObjectId(type.id)).paginate(page=page, per_page=per_page).items
@@ -78,6 +74,17 @@ class Type(Puhjee):
 			else:
 				fields[k.strip()] = 'StringField'
 		self.info = fields
+		return self
+	
+	def str_fields(self):
+		fields = []
+		for k, v in getattr(self, 'info', {}).items():
+			if v == 'StringField':
+				v = ''
+			else:
+				v = ': '+v
+			fields.append(k+v)
+		self.info = ', '.join(fields)
 		return self
 	
 	

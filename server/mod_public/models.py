@@ -1,5 +1,6 @@
 from server import db
 from server.mod_auth.models import User
+from server.mod_nest.models import Type
 
 
 class URL(db.Document):
@@ -7,14 +8,6 @@ class URL(db.Document):
 	template = db.StringField()
 	url = db.StringField(unique=True)
 	info = db.DictField()
-
-
-class Type(db.Document):
-	name = db.StringField(unique=True)
-	info = db.DictField()
-	page = db.StringField()
-	template = db.StringField()
-	partial = db.StringField()
 
 
 class Item(db.Document):

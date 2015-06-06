@@ -1,4 +1,5 @@
 from server.mod_auth.models import Role
+from server.mod_nest.models import Plugin
 
 roles = [
 	('owner', ['access_nest', 'view_templates', 'modify_templates']),
@@ -7,10 +8,13 @@ roles = [
 	('follower', ['access_nest'])
 ]
 
+plugins = ['item', 'template', 'type', 'url', 'navbar', 'preview']
+
 
 def build():
 	global roles, plugins
 	add_roles(prepare_roles(roles))
+	activate_plugins(plugins)
 	print('Build complete.')
 
 
@@ -31,6 +35,15 @@ def add_roles(roles):
 			new=True,
 			set__name=role.name,
 			set__permissions=role.permissions)
+
+
+def activate_plugins(plugins):
+	for plugin in plugins:
+		Plugin.objects(name=plugin).modify(
+			upsert=True,
+		    new=True,
+		    set__name=plugin,
+		    set__is_active=True)
 
 
 import argparse

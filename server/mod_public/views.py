@@ -1,7 +1,9 @@
 from flask import request, Blueprint
 from server.mod_public.libs import Item, URL
-from server.views import render
+from server.views import render, render_error
 from os.path import join
+
+from jinja2.exceptions import TemplateNotFound, TemplatesNotFound
 
 # setup Blueprint
 mod_public = Blueprint('public', __name__)
@@ -18,15 +20,20 @@ def index():
 
 @mod_public.route("/<string:variable>")
 def items(variable):
-	req = request.args
-	if 'page' in req.keys():
-		path, itms = Item.items(variable, req['page'], req['per_page'])
-	else:
-		path, itms = Item.items(variable)
-	return render(path, mod='public', **itms)
+	try:
+		req = request.args
+		if req.get('id', None):
+			return item(variable, None)
+		path, itms = Item.items(variable, page=req.get('page', 1), per_page=req.get('per_page', 10))
+		return render(path, mod='public', **itms)
+	except (TemplatesNotFound, TemplateNotFound):
+		return render_error('Template not found for page type.')
 
 
-@mod_public.route("/<string:item_name>/<int:item_id>")
-def item(item_name, item_id):
-	path, itms = Item.item(item_name, item_id)
+@mod_public.route("/<string:item_name>/<string:item_slug>")
+def item(item_name, item_slug):
+	path, itms = Item.item(
+		item_name, 
+		item_id=request.args.get('id', None), 
+		item_slug=item_slug)
 	return render(path, mod='public', **itms)

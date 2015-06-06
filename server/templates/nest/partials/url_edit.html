@@ -1,7 +1,7 @@
-<a href="/nest/item/{{item_type}}">cancel</a>
+<a href="/nest/urls">back</a>
 <nav>
     <ul>
-        <form method="POST" action="/nest/item/{{item_type}}/add">
+        <form method="POST" action="/nest/url/edit/{{url}}">
             {% include "nest/partials/form.html" %}
             <input type="submit">
             {{ message }}
