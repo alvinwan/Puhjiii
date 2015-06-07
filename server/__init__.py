@@ -24,10 +24,10 @@ login_manager.init_app(app)
 # initialize encryption mechanism
 bcrypt = Bcrypt(app)
 
-from server.mod_auth.views import mod_auth
-from server.mod_nest.views import mod_nest
-from server.mod_public.views import mod_public
-from server.mod_nest.libs import Plugin
+from server.auth.views import mod_auth
+from server.nest.views import mod_nest
+from server.public.views import mod_public
+from server.nest.libs import Plugin
 
 Plugin.load_views()
 

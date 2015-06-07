@@ -1,4 +1,5 @@
 from server.libs import Puhjee
+from . import models
 
 from flask_login import UserMixin
 
@@ -7,6 +8,8 @@ class User(UserMixin, Puhjee):
 	"""
 	System User
 	"""
+	
+	model = models.User
 
 	def is_active(self):
 		"""
@@ -38,7 +41,11 @@ class User(UserMixin, Puhjee):
 	
 	
 class Role(Puhjee):
-	pass
+	"""
+	Roles for each user
+	"""
+	
+	model = models.Role
 
 
 class Allow:

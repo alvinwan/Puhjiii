@@ -2,10 +2,10 @@ from flask import request, redirect, url_for
 from flask_login import current_user, login_required
 
 from server.views import render, context_preset
-from server.mod_nest.views import mod_nest
-from server.mod_nest.libs import Nest
-from server.mod_public.libs import Type
-from server.mod_public.forms import AddTypeForm, EditTypeForm
+from server.nest.views import mod_nest
+from server.nest.libs import Nest
+from server.plugins.type.libs import Type
+from server.public.forms import AddTypeForm, EditTypeForm
 
 from mongoengine.errors import NotUniqueError
 

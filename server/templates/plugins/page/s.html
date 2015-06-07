@@ -1,0 +1,12 @@
+<a href="/nest/">main</a>
+<a href="/nest/page/add">add page</a>
+<nav>
+    <ul>
+        {% for page in pages %}
+        <li><a href="{{ url_for('nest.pages', url=page.url) }}">{{page.title}} : /{{page.url}}</a>
+            <a href="{{ url_for('nest.page_edit', url=page.url) }}">(edit)</a>
+            <a href="{{ url_for('nest.page_delete', url=page.url) }}">(delete)</a>
+        </li>
+        {% endfor %}
+    </ul>
+</nav>

@@ -1,20 +1,9 @@
-"""
-
-Navigation Bar for Files
-
-Loads a list of files from the templates folder.
-
-@author: Alvin Wan
-"""
-
 from urllib.parse import urlparse
 import config
 from os import listdir
 from os.path import isdir, join, dirname as parent
+from . import *
 
-
-path = 'navfiles'
-templates = ['partials/navfiles.html']
 requires = ['view_templates']
 
 

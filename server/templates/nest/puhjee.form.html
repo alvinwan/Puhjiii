@@ -1,7 +1,8 @@
-<a href="/nest/urls">back</a>
+{% block header %}
+{% endblock %}
 <nav>
     <ul>
-        <form method="POST" action="/nest/url/edit/{{url}}">
+        <form method="POST" action="{{ action }}">
             {% include "nest/partials/form.html" %}
             <input type="submit">
             {{ message }}

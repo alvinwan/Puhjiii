@@ -1,17 +1,5 @@
-"""
-
-Types
-
-Displays all items types
-
-@author: Alvin Wan
-"""
-
-from server.mod_public.libs import Item
-
-path = 'item'
-templates = ['partials/items.html']
-
+from . import *
+from .libs import Item
 
 def process(data):
 	type, item_type = data.type, data.item_type

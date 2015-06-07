@@ -2,8 +2,8 @@ from flask import request, redirect, url_for, Blueprint
 from flask_login import login_required, login_user, logout_user
 from server import login_manager, bcrypt
 from server.views import render
-from server.mod_auth.forms import LoginForm, RegisterForm
-from server.mod_auth.libs import User, Role
+from .forms import LoginForm, RegisterForm
+from .libs import User, Role
 from mongoengine.errors import NotUniqueError, ValidationError
 
 # setup Blueprint

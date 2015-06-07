@@ -1,4 +1,3 @@
-path = 'item'
-templates = ['partials/item_edit.html']
+from . import *
 
 process = lambda data: {}

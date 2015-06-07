@@ -1,4 +1,3 @@
-path = 'type'
-templates = ['partials/type_add.html']
+from . import *
 
 process = lambda data: {}

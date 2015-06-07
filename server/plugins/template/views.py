@@ -1,8 +1,8 @@
 from flask_login import login_required, current_user
 from flask import make_response, request
 
-from server.mod_nest.views import mod_nest
-from server.mod_nest.libs import Nest
+from server import mod_nest
+from server.nest.libs import Nest
 from server.views import render, context_preset
 from os.path import join
 import config

@@ -2,7 +2,7 @@ from flask import request, Blueprint, make_response
 from flask_login import current_user, login_required
 
 from server.views import render, context_preset
-from server.mod_nest.libs import Nest
+from server.nest.libs import Nest
 
 # setup Blueprint
 mod_nest = Blueprint('nest', __name__, url_prefix='/nest')

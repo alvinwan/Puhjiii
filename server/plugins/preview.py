@@ -13,7 +13,6 @@ from urllib.parse import urlparse, urljoin
 from os.path import isdir, join, dirname as parent
 
 path = 'preview'
-templates = ['partials/preview.html']
 
 
 def process(obj):

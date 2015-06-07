@@ -3,7 +3,7 @@ from html import unescape
 from flask_login import current_user
 from flask import render_template, render_template_string, make_response, Markup, redirect
 from jinja2.exceptions import TemplatesNotFound, TemplateNotFound, UndefinedError
-from server.mod_auth.libs import Allow
+from server.auth.libs import Allow
 
 
 def render(name, mod=None, repeats=0, markdown=True, **context):
@@ -81,6 +81,11 @@ def permission_required(permission=None, dest='/'):
 
 
 def context_preset(nest):
+	"""
+	Presets for nest context.
+	:param nest: the Nest object
+	:return: new context object
+	"""
 	context = {
 		'repeats': 1,
 		'markdown': False,

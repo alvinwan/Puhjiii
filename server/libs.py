@@ -1,40 +1,16 @@
-import server.mod_auth.models as models_auth
-import server.mod_public.models as models_public
-import server.mod_nest.models as models_nest
-
 from bson import ObjectId
 
 
 class Puhjee:
 	"""
-	base class for all savable objects
+	This is the base class for all savable objects.
 	"""
 	
 	filters = {}
 	
 	def __init__(self, **kwargs):
-		self.load(**kwargs)
-		self.result = None # for query results
-	
-	def model(self):
-		"""
-		Fetch this object's corresponding model
-		:return: model.class
-		"""
-		return Puhjee._model(self.__class__)
-	
-	@staticmethod
-	def _model(cls):
-		"""
-		Fetch this class's corresponding model
-		* raises an error if the model is not found
-		:param cls: classname
-		:return: model.class
-		"""
-		for model in [models_auth, models_public, models_nest]:
-			if hasattr(model, cls.__name__):
-				return getattr(model, cls.__name__)
-		raise UserWarning('Model not found: %s' % cls.__name__)
+		self.filter(**kwargs)
+		self.result = None  # for query results
 	
 	def get(self):
 		"""
@@ -44,7 +20,7 @@ class Puhjee:
 		self.result = self.__class__._get(**self.data())
 		data = Puhjee._data(self, self.result)
 		return self.load(**data)
-	
+
 	@classmethod
 	def _get(cls, **kwargs):
 		"""
@@ -52,17 +28,18 @@ class Puhjee:
 		:param kwargs: filter
 		:return: query results or None
 		"""
-		try:
-			return Puhjee._model(cls).objects(**kwargs).get()
-		except:
-			return None
+		return cls.model.objects(**kwargs).get()
 	
 	def save(self):
 		"""
 		Save object with it's data to database
 		:return: self
 		"""
-		self.result = self.model()(**self.data()).save()
+		self.result = self.model.objects(**self.filters).modify(
+			upsert=True,
+			new=True,
+		    **{'set__%s' % k: v for k, v in self.data().items()}
+		)
 		data = Puhjee._data(self, self.result)
 		return self.__class__(**data)
 		
@@ -77,7 +54,7 @@ class Puhjee:
 			if k == 'id' and not isinstance(v, (bytes, str, ObjectId)):
 				v = getattr(v, 'id', None)
 			if isinstance(v, Puhjee):
-				v = v.model()(**v.data()).to_dbref()
+				v = v.model(**v.data()).to_dbref()
 			setattr(self, k, v)
 		return self	
 		
@@ -97,7 +74,7 @@ class Puhjee:
 		Fetches all fields based on this object's model
 		:return: list of fields
 		"""
-		return Puhjee._fields(self.model())
+		return Puhjee._fields(getattr(self, 'model'))
 	
 	@staticmethod
 	def _fields(model):
@@ -117,6 +94,23 @@ class Puhjee:
 			class_=self.__class__.__name__,
 			data=','.join([k+'='+str(v) for k, v in self.data().items()])
 		)
+	
+	def filter(self, **kwargs):
+		"""
+		Set filters for next save or search.
+		:param kwargs: filters as kwargs
+		:return: self
+		"""
+		self.filters = kwargs
+		self.load(**kwargs)
+		return self
+	
+	def delete(self):
+		"""
+		Delete the object
+		:return: None
+		"""
+		self.get().model(**self.data()).delete()
 	
 	def exists(self):
 		return hasattr(self, 'id')

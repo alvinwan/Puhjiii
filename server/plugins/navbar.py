@@ -9,14 +9,13 @@ for the nest's navigation bar.
 """
 
 path = 'navbar'
-templates = ['partials/navbar.html']
 
 
 def process(data):
 	return dict(
 		links=[
 			{'href': '/nest/templates', 'label': 'templates'},
-			{'href': '/nest/urls', 'label': 'urls'},
+			{'href': '/nest/pages', 'label': 'pages'},
 			{'href': '/nest/items', 'label': 'items'},
 			{'href': '/nest/settings', 'label': 'settings'},
 			{'href': '/logout', 'label': 'logout'}
