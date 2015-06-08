@@ -1,0 +1,13 @@
+<a href="{{ url_for('nest.home') }}">main</a>
+<a href="{{ url_for('nest.mold_add') }}">+ add mold</a>
+<nav>
+    <ul>
+        {% for mold in molds %}
+        <li>
+            <a href="{{ url_for('nest.mold', item_mold=mold.name) }}">{{mold.name}}</a>
+            <a href="{{ url_for('nest.mold_edit', item_mold=mold.name) }}">(edit)</a>
+            <a href="{{ url_for('nest.mold_delete', item_mold=mold.name) }}">(delete)</a>
+        </li>
+        {% endfor %}
+    </ul>
+</nav>

@@ -12,8 +12,8 @@ mod_nest = Blueprint('nest', __name__, url_prefix='/nest')
 @login_required
 def home():
 	nst = Nest(current_user, request)
-	nst.load_plugin(current_user, 'navbar')
-	nst.load_plugin(current_user, 'preview', path='', request=request)
+	nst.load_plugin('navbar')
+	nst.load_plugin('preview.basic', path='', request=request)
 	return render('nest.html', **context_preset(nst))
 
 

@@ -9,4 +9,4 @@ photos (link to src), merchandise etc.
 @author: Alvin Wan
 """
 
-path = 'type'
+path = 'mold'

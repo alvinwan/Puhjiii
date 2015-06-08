@@ -1,4 +1,5 @@
-<a href="/nest/">main</a>
+<a href="{{ url_for('nest.home') }}">main</a>
+<a href="{{ url_for('nest.code_import') }}">+ import</a>
 <nav>
     <ul>
         {% for link in links %}

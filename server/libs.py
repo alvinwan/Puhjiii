@@ -35,13 +35,15 @@ class Puhjee:
 		Save object with it's data to database
 		:return: self
 		"""
+		if len(list(self.filters.keys())) == 0:
+			self.filters = self.data()
 		self.result = self.model.objects(**self.filters).modify(
 			upsert=True,
 			new=True,
 		    **{'set__%s' % k: v for k, v in self.data().items()}
 		)
 		data = Puhjee._data(self, self.result)
-		return self.__class__(**data)
+		return self.load(**data)
 		
 	def load(self, **kwargs):
 		"""

@@ -17,3 +17,12 @@ DEBUG = get('DEBUG', True)
 # define application directory
 import os
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+# conditional log_level printing
+LOG_LEVEL = 2
+
+
+def output(message, level=1):
+	global LOG_LEVEL
+	if LOG_LEVEL >= level:
+		print(message)

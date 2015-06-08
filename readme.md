@@ -15,7 +15,7 @@ Now, Puhjee is an *extremely* lightweight CMS. Truth be told, it's not built to 
 4. Install all requirements `pip install -r requirements.txt`.
 5. Create a new directory for the datastore `mkdir env/db`.
 6. Launch the server daemon `mongod --dbpath env/db`.
-7. In a new console, launch the server itself `env/bin/python run_server.py`.
+7. In a new console, launch the server itself `env/bin/python run.py`.
 
 > To ensure that the system works as promised, run tests using `env/bin/py.test tests`.
 
@@ -24,13 +24,13 @@ Here are existing features, packed into this tiny program:
 
 Editing Statics
 - drag-and-drop files in, to add to the website
-- drag-and-drop to rearrange elements on page
 - click anywhere on rendered page to edit content
+- drag-and-drop to rearrange elements on page
 - copy-and-paste or delete elements
 - convert elements into repeatable templates (e.g., post, header, footer)
-- access the code directly, when needed
++ access the code directly, when needed
 
 Website Management
-- add routers for pretty URLs
-- login and register users
-- install plugins to enhance functionality
++ add pages and additional users, based on existing or new templates
++ login and register users
++ install plugins to enhance functionality

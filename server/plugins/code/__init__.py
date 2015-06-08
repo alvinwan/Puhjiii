@@ -7,4 +7,4 @@ Loads a list of files from the templates folder.
 @author: Alvin Wan
 """
 
-path = 'template'
+path = 'code'

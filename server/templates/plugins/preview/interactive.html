@@ -1,0 +1,7 @@
+<iframe src="{{src}}"></iframe>
+<form method="POST" action="{{ action }}">
+    {% for k, v in interactive_form._fields.items() %}
+    <div>{{ v.label }}: {{ v() }}</div>
+    {% endfor %}
+    <input type="submit">
+</form>

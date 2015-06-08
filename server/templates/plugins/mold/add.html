@@ -1,7 +1,7 @@
-<a href="/nest/item/{{item_type}}">back</a>
+<a href="{{ url_for('nest.molds') }}">main</a>
 <nav>
     <ul>
-        <form method="POST" action="/nest/type/{{item_type}}/edit">
+        <form method="POST" action="{{ url_for('nest.mold_add') }}">
             {% include "nest/partials/form.html" %}
             <input type="submit">
             {{ message }}

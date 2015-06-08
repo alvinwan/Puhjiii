@@ -1,7 +1,7 @@
 from server import db
 
 
-class Type(db.Document):
+class Mold(db.Document):
 	name = db.StringField(unique=True)
 	info = db.DictField()
 	page = db.StringField()

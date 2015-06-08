@@ -1,9 +1,9 @@
 from server.auth.models import User
-from server.plugins.type.models import Type
+from server.plugins.mold.models import Mold
 from server import db
 
 
 class Item(db.Document):
-	type = db.ReferenceField(Type)
+	mold = db.ReferenceField(Mold)
 	author = db.ReferenceField(User)
 	info = db.DictField()

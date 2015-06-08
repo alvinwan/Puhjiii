@@ -1,6 +1,8 @@
 from server.auth.libs import Role
 from server.nest.libs import Plugin
+from server.plugins.code.libs import Template
 from mongoengine.errors import DoesNotExist
+from jinja2.exceptions import TemplateNotFound
 
 roles = [
 	('owner', ['access_nest', 'view_templates', 'modify_templates']),
@@ -9,15 +11,20 @@ roles = [
 	('follower', ['access_nest'])
 ]
 
-plugins = ['item', 'template', 'type', 'url', 'navbar', 'preview']
+plugins = ['code', 'item', 'mold', 'page', 'plugin', 'preview', 'navbar']
+
+public_templates = ['index.html']
 
 
 def build(args):
-	global roles, plugins
+	global roles, plugins, public_templates
 	for role in roles:
 		Role(name=role[0]).load(permissions=role[1]).save()
 	for plugin in plugins:
 		Plugin(name=plugin).load(is_active=True).save()
+	for template in public_templates:
+		path = 'public/'+template
+		Template(path=path).load(name=template.split('.')[0]).save()
 	print('Build complete.')
 
 
@@ -39,21 +46,32 @@ def activate(args):
 
 def deactivate(args):
 	try:
-		plugin = Plugin(name=args.plugin).get().load(is_active=False).save()
+		Plugin(name=args.plugin).get().load(is_active=False).save()
 		print('Plugin "%s" deactivated.' % args.plugin)
 	except AttributeError:
 		print('You must specify a plugin using the -p or --plugin flag.')
 	except DoesNotExist:
 		print('Plugin "%s" not found.' % args.plugin)
 		
+		
+def register(args):
+	try:
+		template = Template(path=args.path).load(name=args.name).generate_defaults().save()
+		print('Template "%s" at "%s" added with %d fields.' % (args.name, args.path, len(template.defaults.keys())))
+	except AttributeError:
+		print('You must specify both a path using the --path flag and a name using the -t or --template flag.')
+	except TemplateNotFound:
+		print('Invalid template path. Path must be relatiave to server/templates/ directory.')
+		
 
 import argparse
 
 parser = argparse.ArgumentParser(description='Setup Puhjee with initial database settings')
-parser.add_argument('command', choices=['build', 'install', 'activate', 'deactivate'],
-                    help='add default settings to the database')
+parser.add_argument('command', choices=['build', 'install', 'activate', 'deactivate', 'register', 'import'],
+                    help='add default settings to the database (install/activate/deactivate plugin, register/import template)')
 parser.add_argument('-p', '--plugin', type=str, help='specify a plugin name')
-parser.add_argument('--path', type=str, help='specify path to the plugin files')
+parser.add_argument('-t', '--template', type=str, help='specify a template name')
+parser.add_argument('--path', type=str, help='specify path')
 
 args = parser.parse_args()
 globals()[args.command](args)

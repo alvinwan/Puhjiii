@@ -4,7 +4,7 @@ from server import login_manager, bcrypt
 from server.views import render
 from .forms import LoginForm, RegisterForm
 from .libs import User, Role
-from mongoengine.errors import NotUniqueError, ValidationError
+from mongoengine.errors import NotUniqueError, ValidationError, DoesNotExist
 
 # setup Blueprint
 mod_auth = Blueprint('auth', __name__)
@@ -13,9 +13,10 @@ mod_auth = Blueprint('auth', __name__)
 @mod_auth.route('/login', methods=['POST', 'GET'])
 def login():
 	form = LoginForm(request.form)
-	user = User(email=form.email.data).get()
+	user = User(email=form.email.data)
 	try:
 		if request.method == 'POST' and form.validate():
+			user.get()
 			if user.exists() and user.is_active() \
 				and bcrypt.check_password_hash(user.password, form.password.data):
 
@@ -24,6 +25,8 @@ def login():
 			message = 'Login failed.'
 	except ValidationError as e:
 		message = str(e)
+	except DoesNotExist:
+		message = 'Login failed.'
 	return render('login.html', mod='auth', **locals())
 
 

@@ -3,16 +3,9 @@ from server.libs import Puhjee
 from wtforms import fields as wtf
 
 
-class Type(Puhjee):
+class Mold(Puhjee):
 	
-	model = models.Type
-
-	@staticmethod
-	def types():
-		types = []
-		for type in Type.model.objects.all():
-			types.append(type)
-		return types
+	model = models.Mold
 
 	def add_fields(self, info):
 		fields = {}

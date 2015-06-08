@@ -1,5 +1,4 @@
 from .libs import Page
-from flask import url_for
 from . import *
 
 

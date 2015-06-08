@@ -1,9 +1,9 @@
 from . import *
 from .libs import Item
+from flask import url_for
+
 
 def process(data):
-	type, item_type = data.type, data.item_type
-	items = Item.items(item_type, type=type, raw=True)
-	for item in items:
-		item.href = '/nest/item/%s/%s' % (item_type, str(item.id))
-	return dict(type=item_type, items=items)
+	mold, item_mold = data.mold, data.item_mold
+	items = Item.items(item_mold, mold=mold, raw=True)
+	return dict(mold=item_mold, items=items)

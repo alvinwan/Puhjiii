@@ -1,0 +1,12 @@
+<a href="{{ url_for('nest.home') }}">back</a>
+{% for plugin in plugins %}
+<li>
+    {{ plugin.name }}
+    {% if plugin.is_active %}
+    <a href="{{ url_for('nest.plugin_deactivate', plugin_name=plugin.name) }}">(deactivate)</a>
+    {% else %}
+    <a href="{{ url_for('nest.plugin_activate', plugin_name=plugin.name) }}">(activate)</a>
+    {% endif %}
+    <a href="{{ url_for('nest.code', path='plugins/'+plugin.name+'/') }}">(edit code)</a>
+</li>
+{% endfor %}

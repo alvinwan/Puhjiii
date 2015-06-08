@@ -1,0 +1,5 @@
+<form method="POST" action="{{ url_for('nest.code_import') }}">
+    {% include "nest/partials/form.html" %}
+    <a href="{{ url_for('nest.codes') }}">cancel</a>
+    <input type="submit">
+</form>
