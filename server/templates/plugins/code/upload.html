@@ -1,0 +1,10 @@
+<a href="{{ url_for('nest.home') }}">main</a>
+<form action="{{ url_for('nest.code_upload') }}" method="post" enctype="multipart/form-data">
+    <p>
+        {{form.files(multiple='')}}
+    </p>
+    {% if message %}
+    {{ message }}
+    {% endif %}
+    <input type="submit">
+</form>

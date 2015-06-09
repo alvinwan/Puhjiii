@@ -1,7 +1,7 @@
-from server.libs import Puhjee
+from server.libs import Puhjiii
 from . import models
 
 
-class Page(Puhjee):
+class Page(Puhjiii):
 	
 	model = models.Page

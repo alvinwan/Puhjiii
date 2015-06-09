@@ -12,7 +12,7 @@ class DynamicForm(Form):
 		Generate fields from a dictionary of fields
 		:param fields: dictionary of label => field type
 		:param data: (optional) existing data
-		:return:
+		:return: cls
 		"""
 		for k in cls.__dict__.keys():
 			setattr(cls, k, None)

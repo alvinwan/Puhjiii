@@ -1,12 +1,12 @@
 from flask import render_template
-from server.libs import Puhjee
+from server.libs import Puhjiii
 from server.plugins.mold.libs import Mold
 from server.plugins.page.libs import Page
 from . import models
 from bson import ObjectId
 
 
-class Item(Puhjee):
+class Item(Puhjiii):
 	
 	model = models.Item
 

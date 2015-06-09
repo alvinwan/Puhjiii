@@ -50,6 +50,8 @@ def register():
 			message = str(e)
 		except NotUniqueError:
 			message = 'Email address already registered. [login?](/login)'
+		except DoesNotExist:
+			message = 'We could not register your account. Are you the administrator? If so, did you run "python3 setup.py build"?'
 	return render('register.html', mod='auth', **locals())
 
 

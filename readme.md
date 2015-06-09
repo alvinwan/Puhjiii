@@ -22,13 +22,14 @@ Now, Puhjee is an *extremely* lightweight CMS. Truth be told, it's not built to 
 ##Puhjee Features
 Here are existing features, packed into this tiny program:
 
-Editing Statics
-- drag-and-drop files in, to add to the website
-- click anywhere on rendered page to edit content
+Editing Webpages
++ upload and import new templates
++ click anywhere on rendered page to edit content
++ convert elements into repeatable items (e.g., post, comment)
++ convert elements into reusable partials (e.g., header, footer)
++ access the code directly, when needed
 - drag-and-drop to rearrange elements on page
 - copy-and-paste or delete elements
-- convert elements into repeatable templates (e.g., post, header, footer)
-+ access the code directly, when needed
 
 Website Management
 + add pages and additional users, based on existing or new templates

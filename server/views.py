@@ -1,3 +1,15 @@
+"""
+
+URL Routes
+
+All routes should follow the following structure:
+
+[type]/[action]/[identifying data]
+
+Additional data that does not fall into those three
+categories should be appended as querystrings.
+"""
+
 import markdown as mkd
 from html import unescape
 from flask_login import current_user
@@ -31,7 +43,7 @@ def render_error(message):
 	:param message: error message
 	:return: response
 	"""
-	return message
+	return render('error.html', message=message)
 
 
 def filename(name, mod):
@@ -40,7 +52,7 @@ def filename(name, mod):
 	:param name: template name
 	:return path or None
 	"""
-	path, prefixes = name, ['', 'puhjee.', 'partials/', 'partials/puhjee.']
+	path, prefixes = name, ['', 'puhjiii.', 'partials/', 'partials/puhjiii.']
 	for prefix in prefixes:
 		try:
 			render_template(path)
@@ -68,7 +80,7 @@ def permission_required(permission=None, dest='/'):
 	Use like so: @permission_required('access_nest')
 	Lists are acceptable: @permission_required(['access_nest', 'view_templates'])
 	:param permission: string or list of strings
-	:param dest: 
+	:param dest:
 	:return: decorator
 	"""
 	def decorator(f):
@@ -80,17 +92,17 @@ def permission_required(permission=None, dest='/'):
 	return decorator
 
 
-def context_preset(nest):
+def context(nest, **kwargs):
 	"""
 	Presets for nest context.
 	:param nest: the Nest object
 	:return: new context object
 	"""
-	context = {
+	data = {
 		'repeats': 1,
 		'markdown': False,
 		'nest': nest,
 		'mod': 'nest'
 	}
-	context.update(nest.context)
-	return context
+	data.update(nest.context, **kwargs)
+	return data

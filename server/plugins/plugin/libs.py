@@ -1,13 +1,13 @@
-from server.libs import Puhjee
+from server.libs import Puhjiii
 from server.auth.libs import Allow
 from . import models
 import config
 import importlib
 
 
-class Plugin(Puhjee):
+class Plugin(Puhjiii):
 	"""
-	Handles advanced functionality for Nest and Puhjee
+	Handles advanced functionality for Nest and Puhjiii
 	as a whole
 	"""
 
@@ -34,7 +34,7 @@ class Plugin(Puhjee):
 			self.settings = importlib.import_module(
 				'server.plugins.%s' % self.plugin)
 			if not Allow.ed(self.user, getattr(self.settings, 'requires', [])):
-				self.templates.append('puhjee.error.html')
+				self.templates.append('puhjiii.error.html')
 				self.context = {'message': 'Forbidden'}
 				return self
 			parts = self.plugin.split('.')
@@ -48,7 +48,7 @@ class Plugin(Puhjee):
 					self.templates[i] = 'plugins/%s/%s' % (self.settings.path, template)
 			self.context = self.settings.process(self)
 		except ImportError as e:
-			self.templates.append('puhjee.error.html')
+			self.templates.append('puhjiii.error.html')
 			self.context = {'message': 'No such plugin\nError: %s' % e}
 		return self
 

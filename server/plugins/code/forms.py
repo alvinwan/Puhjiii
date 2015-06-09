@@ -9,3 +9,7 @@ class EditCodeForm(Form):
 class ImportCodeForm(Form):
 	path = wtf.StringField()
 	html = wtf.TextAreaField()
+	
+	
+class UploadCodeForm(Form):
+	files = wtf.FileField()

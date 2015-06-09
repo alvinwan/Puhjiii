@@ -1,9 +1,9 @@
 from . import models
-from server.libs import Puhjee
+from server.libs import Puhjiii
 from wtforms import fields as wtf
 
 
-class Mold(Puhjee):
+class Mold(Puhjiii):
 	
 	model = models.Mold
 

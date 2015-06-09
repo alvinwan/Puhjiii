@@ -1,2 +1,8 @@
-Hi there,
-{{person}}
+HI.
+{% if current_user %}
+Welcome back, {{ current_user.name }}.
+<a href="{{ url_for('nest.home') }}">nest</a>
+{% else %}
+<a href="{{ url_for('auth.login') }}">login</a>
+<a href="{{ url_for('auth.register') }}">register</a>
+{% endif %}

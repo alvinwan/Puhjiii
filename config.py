@@ -9,7 +9,8 @@ HASH_ROUNDS = 2
 
 # database connection
 SECRET_KEY = get('SECRET_KEY', 'flask+mongoengine=<3')
-DB = get('DB', 'puhjee')
+DB = get('DB', 'puhjiii')
+SESSION_STORE = 'session'
 
 # testing
 DEBUG = get('DEBUG', True)

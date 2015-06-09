@@ -1,4 +1,4 @@
-from server.auth.libs import Role
+from server.auth.libs import Role, User
 from server.nest.libs import Plugin
 from server.plugins.code.libs import Template
 from mongoengine.errors import DoesNotExist
@@ -63,15 +63,25 @@ def register(args):
 	except TemplateNotFound:
 		print('Invalid template path. Path must be relatiave to server/templates/ directory.')
 		
+		
+def grant(args):
+	try:
+		user = User(email=args.email).get()
+		role = Role(name=args.role).get()
+		user.load(role=role).save()
+	except DoesNotExist as e:
+		print(e)
 
 import argparse
 
 parser = argparse.ArgumentParser(description='Setup Puhjee with initial database settings')
-parser.add_argument('command', choices=['build', 'install', 'activate', 'deactivate', 'register', 'import'],
+parser.add_argument('command', choices=['build', 'install', 'activate', 'deactivate', 'register', 'import', 'grant'],
                     help='add default settings to the database (install/activate/deactivate plugin, register/import template)')
 parser.add_argument('-p', '--plugin', type=str, help='specify a plugin name')
 parser.add_argument('-t', '--template', type=str, help='specify a template name')
 parser.add_argument('--path', type=str, help='specify path')
+parser.add_argument('-e', '--email', type=str, help='specify user email')
+parser.add_argument('-r', '--role', type=str, help='specify name of role')
 
 args = parser.parse_args()
 globals()[args.command](args)

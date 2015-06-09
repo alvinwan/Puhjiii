@@ -2,88 +2,115 @@ from flask import request, redirect, url_for
 from flask_login import current_user, login_required
 
 from server import mod_nest, mod_public
-from server.views import render, context_preset, render_error
+from server.plugins.page.libs import Page
+from server.views import render, context, render_error
 from server.nest.libs import Nest
 from .libs import Item
 from server.plugins.mold.libs import Mold
-from server.plugins.preview.interactive import postprocess
 from .forms import EditItemForm, AddItemForm
 
 from jinja2.exceptions import TemplateNotFound, TemplatesNotFound
 from mongoengine.errors import DoesNotExist
 
 
-@mod_nest.route("/item/<string:item_mold>/<string:item_id>")
+"""
+
+Nest URLs
+
+"""
+
+
+def nest_items(item_mold, url):
+	nest = Nest(current_user, request)
+	try:
+		mold = Mold(name=item_mold).get()
+		nest.load_plugin('item.s', item_mold=item_mold, mold=mold)
+		nest.load_plugin('preview.basic',
+		                 path=url,
+		                 request=request)
+		return render('nest.html', **context(**locals()))
+	except DoesNotExist as e:
+		return render_error(str(e))
+
+
 @mod_nest.route("/mold/<string:item_mold>")
 @login_required
-def mold(item_mold, item_id=None):
-	mold = Mold(name=item_mold).get()
-	nst = Nest(current_user, request)
-	if item_id:
-		item = Item(id=item_id).get()
-		form = EditItemForm.propagate(mold.info, data=item.info)(request.form)
-		nst.load_plugin('item.edit', item=item)
-		path = url_for('public.item', item_mold=item_mold, item_id=item_id)
-	else:
-		nst.load_plugin('item.s', item_mold=item_mold, mold=mold)
-		path = '/' + item_mold
-	nst.load_plugin('preview.basic', path=path, request=request)
-	locals().update(context_preset(nst))
-	return render('nest.html', **locals())
+def mold(item_mold):
+	return nest_items(
+		item_mold=item_mold, 
+		url=url_for('public.items', item_mold=item_mold))
 
 
-def item_form(item_mold, action='add', item_id=None):
-	message=''
-	mold = Mold(name=item_mold).get()
-	class_ = {'add': AddItemForm, 'edit': EditItemForm}[action].propagate(mold.info)
-	if item_id:
-		item = Item(id=item_id).get()
-		form = class_(request.form, data=item.info)
-	else:
-		form = class_(request.form)
-	nst = Nest(current_user, request)
-	nst.load_plugin('item.%s' % action)
-	if item_id:
-		url = url_for('public.item', item_mold=item_mold, item_id=item_id)
-		nst.load_plugin('preview.interactive', path=url, request=request, template='public/%s.html' % item_mold,
-		                action=url_for('nest.item_iedit', item_mold=item_mold, item_id=item_id), item_id=item_id)
-	else:
-		nst.load_plugin('preview.basic', path='', request=request)
-	locals().update(context_preset(nst))
-	if request.method == 'POST' and form.validate():
-		if not item_id:
-			item = Item()
-		item.load(
-			info={k: v.data for k, v in form._fields.items()},
-			mold=mold).save()
-		return redirect(url_for('nest.mold', item_mold=item_mold, item_id=str(item.id)))
-	return render('nest.html', **locals())
+@mod_nest.route("/item/<string:item_mold>/<string:item_id>")
+@login_required
+def item(item_mold, item_id):
+	return nest_items(
+		item_mold=item_mold,
+		url=url_for('public.item', item_mold=item_mold, item_id=item_id))
+
+
+def item_form(mold, item, form, plugins, forward, item_mold, item_id=None):
+	nest = Nest(current_user, request)
+	try:
+		nest.load_plugins(*plugins)
+		if request.method == 'POST' and form.validate():
+			item.load(mold=mold).assemble(form).save()
+			return redirect(forward)
+		return render('nest.html', **context(**locals()))
+	except RuntimeError as e:
+		return render_error(str(e))
 
 
 @mod_nest.route("/item/<string:item_mold>/<string:item_id>/edit", methods=['POST', 'GET'])
 @login_required
 def item_edit(item_mold, item_id):
 	try:
-		return item_form(item_mold, 'edit', item_id)
-	except DoesNotExist:
-		return render('error.html', message='No such %s exists.' % item_mold)
+		mold = Mold(name=item_mold).get()
+		item = Item(id=item_id).get()
+		return item_form(
+			mold=mold,
+		    item=item,
+		    form=EditItemForm.propagate(mold.info)(request.form, data=item.info),
+		    plugins = [
+			    ('item.edit', {}),
+			    ('preview.basic',
+			        {
+			            'request': request,
+			            'path': url_for('public.item', item_mold=item_mold, item_id=item_id)
+			        }
+			    )
+		    ],
+		    forward=url_for('nest.mold', item_mold=item_mold),
+		    item_mold=item_mold,
+		    item_id=item_id
+		)
+	except DoesNotExist as e:
+		return render_error(str(e))
 
 
 @mod_nest.route("/item/<string:item_mold>/add", methods=['GET', 'POST'])
 @login_required
 def item_add(item_mold):
-	return item_form(item_mold, 'add')
-
-
-@mod_nest.route("/item/<string:item_mold>/<string:item_id>/iedit", methods=['POST'])
-@login_required
-def item_iedit(item_mold, item_id):
 	try:
-		url = url_for('public.item', item_mold=item_mold, item_id=item_id)
-		postprocess(url=url, html=request.form['html'])
-		return redirect(url_for('nest.item_edit', url=url))
-	except DoesNotExist:
-		return render('error.html', message='No such %s exists.' % item_mold)
+		mold = Mold(name=item_mold).get()
+		return item_form(
+			mold=mold,
+			item=item,
+		    form=AddItemForm.propagate(mold.info)(request.form),
+			plugins = [
+				('item.add', {}),
+				('preview.basic',
+					{
+						'request': request,
+						'path': url_for('public.mold', item_mold=item_mold)
+					}
+				)
+			],
+		    forward=url_for('nest.mold', item_mold=item_mold),
+			item_mold=item_mold
+		)
+	except DoesNotExist as e:
+		return render_error(str(e))
 
 
 @mod_nest.route("/item/<string:item_mold>/<string:item_id>/delete")
@@ -92,27 +119,40 @@ def item_delete(item_mold, item_id):
 	try:
 		Item(id=item_id, mold=Mold(name=item_mold).get()).delete()
 		return redirect(url_for('nest.mold', item_mold=item_mold))
-	except DoesNotExist:
-		return render('error.html', message='No such %s exists.' % item_mold)
+	except DoesNotExist as e:
+		return render_error(str(e))
 
 
-@mod_public.route("/<string:variable>")
-def items(variable):
+"""
+
+Public URLs
+
+"""
+
+@mod_public.route("/<string:item_mold>")
+def items(item_mold):
 	try:
-		req = request.args
-		if req.get('id', None):
-			return item(variable, None)
-		path, itms = Item.items(variable, page=req.get('page', 1), per_page=req.get('per_page', 10))
-		return render(path, mod='public', **itms)
-	except (TemplatesNotFound, TemplateNotFound):
-		return render_error('Template not found for page mold.')
+		page = Page(url=item_mold).get()
+		return render(page.template, mod='public', **page.info)
+	except DoesNotExist:
+		try:
+			req = request.args
+			if req.get('id', None):
+				return item(item_mold, None)
+			path, itms = Item.items(item_mold, page=req.get('page', 1), per_page=req.get('per_page', 10))
+			return render(path, mod='public', **itms)
+		except (TemplatesNotFound, TemplateNotFound):
+			return render_error('Template not found for page mold.')
 
 
 @mod_public.route("/<string:item_mold>/<string:item_slug>")
 @mod_public.route("/<string:item_mold>/<string:item_id>/")
 def item(item_mold, item_slug=None, item_id=None):
-	path, itms = Item.item(
-		item_mold,
-		item_id=item_id,
-		item_slug=item_slug)
-	return render(path, mod='public', **itms)
+	try:
+		path, itms = Item.item(
+			item_mold,
+			item_id=item_id,
+			item_slug=item_slug)
+		return render(path, mod='public', **itms)
+	except (TemplatesNotFound, TemplateNotFound):
+		return render_error('Template not found for page mold.')

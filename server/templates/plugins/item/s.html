@@ -5,7 +5,7 @@
 <nav>
     <ul>
         {% for item in items %}
-            <li><a href="{{ url_for('nest.mold', item_mold=item_mold, item_id=item.id) }}">{{ item.info.title }}</a>
+            <li><a href="{{ url_for('nest.item', item_mold=item_mold, item_id=item.id) }}">{{ item.info.title }}</a>
                 <a href="{{ url_for('nest.item_edit', item_mold=item_mold, item_id=item.id) }}">(edit)</a>
                 <a href="{{ url_for('nest.item_delete', item_mold=item_mold, item_id=item.id) }}">(delete)</a></li>
         {% endfor %}

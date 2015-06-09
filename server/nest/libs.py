@@ -34,6 +34,19 @@ class Nest:
 		self.plugins.append(plugin)
 		return self
 	
+	def load_plugins(self, *plugins):
+		"""
+		Loads a list of tuples, where the first element is the
+		name of the plugin, and the second element is dictionary of
+		kwargs for the plugin.
+		:param plugins: list
+		:return: self
+		"""
+		for plugin, kwargs in plugins:
+			self.load_plugin(plugin, **kwargs)
+		return self
+		
+	
 	@property
 	def panels(self, html='%s'):
 		"""

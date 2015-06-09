@@ -1,7 +1,8 @@
 from bson import ObjectId
+from server import db
 
 
-class Puhjee:
+class Puhjiii:
 	"""
 	This is the base class for all savable objects.
 	"""
@@ -9,6 +10,11 @@ class Puhjee:
 	filters = {}
 	
 	def __init__(self, **kwargs):
+		"""
+		Automatically loads all kwargs as filters
+		:param kwargs: kwargs
+		:return: self
+		"""
 		self.filter(**kwargs)
 		self.result = None  # for query results
 	
@@ -18,7 +24,7 @@ class Puhjee:
 		:return: object loaded with data
 		"""
 		self.result = self.__class__._get(**self.data())
-		data = Puhjee._data(self, self.result)
+		data = Puhjiii._data(self, self.result)
 		return self.load(**data)
 
 	@classmethod
@@ -42,7 +48,7 @@ class Puhjee:
 			new=True,
 		    **{'set__%s' % k: v for k, v in self.data().items()}
 		)
-		data = Puhjee._data(self, self.result)
+		data = Puhjiii._data(self, self.result)
 		return self.load(**data)
 		
 	def load(self, **kwargs):
@@ -53,10 +59,12 @@ class Puhjee:
 		:return: self
 		"""
 		for k, v in kwargs.items():
-			if k == 'id' and not isinstance(v, (bytes, str, ObjectId)):
+			if k in self.model._fields.keys() \
+				and isinstance(self.model._fields[k], db.ReferenceField)\
+				and not isinstance(v, (bytes, str, ObjectId)):
 				v = getattr(v, 'id', None)
-			if isinstance(v, Puhjee):
-				v = v.model(**v.data()).to_dbref()
+			# if isinstance(v, Puhjiii):
+			# 	v = v.model(**v.data()).to_dbref()
 			setattr(self, k, v)
 		return self	
 		
@@ -65,7 +73,7 @@ class Puhjee:
 		Returns all data associated with object
 		:return: data for specified fields, or all data
 		"""
-		return Puhjee._data(self, self)
+		return Puhjiii._data(self, self)
 	
 	@staticmethod
 	def _data(self, obj):
@@ -76,7 +84,7 @@ class Puhjee:
 		Fetches all fields based on this object's model
 		:return: list of fields
 		"""
-		return Puhjee._fields(getattr(self, 'model'))
+		return Puhjiii._fields(getattr(self, 'model'))
 	
 	@staticmethod
 	def _fields(model):
@@ -103,8 +111,8 @@ class Puhjee:
 		:param kwargs: filters as kwargs
 		:return: self
 		"""
-		self.filters = kwargs
 		self.load(**kwargs)
+		self.filters = {k: getattr(self, k) for k, v in kwargs.items()}
 		return self
 	
 	def delete(self):
@@ -113,6 +121,20 @@ class Puhjee:
 		:return: None
 		"""
 		self.get().model(**self.data()).delete()
+
+	def assemble(self, form):
+		"""
+		Assemble all data from form and package into info.
+		:return: self
+		"""
+		self.info = {k: v.data for k, v in form._fields.items()}
+		return self
 	
 	def exists(self):
+		"""
+		Test if the current object exists.
+		:return:
+		"""
+		if not self.result:
+			self.get()
 		return hasattr(self, 'id')

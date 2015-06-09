@@ -1,14 +1,15 @@
-import config
-from server.libs import Puhjee
+from server.libs import Puhjiii
 from . import models
 
-from os.path import join
+from server.auth.libs import File
 from bs4 import BeautifulSoup, element
 from loremipsum import get_sentence
 import re
+import string
+import random
 
 
-class Template(Puhjee):
+class Template(Puhjiii):
 	
 	model = models.Template
 	i = 0
@@ -16,16 +17,6 @@ class Template(Puhjee):
 	def __init__(self, **kwargs):
 		self.html = self.path = None
 		super().__init__(**kwargs)
-	
-	@staticmethod
-	def path_to_html(path):
-		abs_path = join(config.BASE_DIR, 'server', path)
-		return open(abs_path).read()
-	
-	@staticmethod
-	def html_to_path(html, path):
-		abs_path = join(config.BASE_DIR, 'server', path)
-		return open(abs_path, 'w').write(html)
 
 	@staticmethod
 	def to_template(path):
@@ -35,13 +26,13 @@ class Template(Puhjee):
 		:param path: path to template file from templates directory
 		:return: fields
 		"""
-		html = Template.path_to_html(path)
+		html = File.open(path)
 		soup, fields = Template.to_fields(BeautifulSoup(html))
 		return soup, fields
 
 
 	@staticmethod
-	def to_fields(soup):
+	def to_fields(soup, prefix=True):
 		"""
 		Performs a depth-first-search on the document tree. Originally
 		implemented dfs directly -> now using BeautifulSoup implementation 
@@ -56,6 +47,8 @@ class Template(Puhjee):
 		nonwhitespace = re.compile('\S+')
 		validstring = re.compile('{{\s?([A-z0-9_]+)\s?}}')
 		validstmt = re.compile('{{\s+\S+\s+}}')
+		otherexpr = re.compile('{[^{][\s\S]+[^}]}')
+		prefix = ''.join([random.choice(string.ascii_letters) for _ in range(3)]) if prefix else ''
 		for child in soup.descendants:
 			if isinstance(child, element.NavigableString) \
 				and nonwhitespace.search(child):
@@ -65,17 +58,17 @@ class Template(Puhjee):
 			if match:
 				key = match.group(1)
 				tag = ''
-			elif validstmt.match(tag):
+			elif validstmt.match(tag) or otherexpr.match(tag):
 				continue
 			else:
-				key = 'i%d' % Template.i
+				key = '%si%d' % (prefix, Template.i)
 				tag.replace_with('{{ %s }}' % key)
 				Template.i += 1
 			fields[key] = tag
 		return soup, fields
 	
 	@staticmethod
-	def to_defaults(soup, fields={}):
+	def to_defaults(soup, fields={}, prefix=True):
 		"""
 		Parses the source soup and generates lorem ipsum for values
 		that are blank
@@ -83,7 +76,7 @@ class Template(Puhjee):
 		:param fields: initial data
 		:return: soup, fields
 		"""
-		soup, fields = Template.to_fields(soup)
+		soup, fields = Template.to_fields(soup, prefix)
 		for k, v in fields.items():
 			if len(v) == 0:
 				fields[k] = get_sentence()
@@ -99,7 +92,7 @@ class Template(Puhjee):
 		:return: 
 		"""
 		soup, fields = Template.to_defaults(BeautifulSoup(html))
-		Template.html_to_path(str(soup), path)
+		File.write('templates/'+path, str(soup))
 		return soup, fields
 
 	def import_html(self):
@@ -119,7 +112,7 @@ class Template(Puhjee):
 		fields that do not have values.
 		:return:
 		"""
-		html = self.path_to_html(self.path)
+		html = File.read(self.path)
 		soup, fields = self.to_defaults(BeautifulSoup(html))
 		self.defaults = fields
 		return self

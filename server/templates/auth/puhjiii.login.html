@@ -1,9 +1,9 @@
-<form method="POST" action="/register">
-    <div>{{ form.name.label }}: {{ form.name() }}</div>
+<form method="POST" action="/login">
     <div>{{ form.email.label }}: {{ form.email() }}</div>
     <div>{{ form.password.label }}: {{ form.password(type='password') }}</div>
     <input type="submit">
     {% if message %}
     {{ message }}
     {% endif %}
+    <a href="{{ url_for('auth.register') }}">register</a>
 </form>
