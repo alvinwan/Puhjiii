@@ -1,6 +1,6 @@
-<a href="{{ url_for('nest.home') }}">main</a>
-<form method="POST" action="{{ url_for('nest.code_import') }}">
-    {% include "nest/partials/form.html" %}
-    <a href="{{ url_for('nest.codes') }}">cancel</a>
-    <input type="submit">
-</form>
+{% extends "nest/puhjiii.form.html" %}
+{% block path %}<a href="{{ url_for('nest.codes') }}">Code</a> / <span class="nest-path-curr">Import</span>{% endblock %}
+{% set cancel = url_for('nest.codes') %}
+{% set action = url_for('nest.code_import') %}
+{% set submit = "Save" %}
+{% set title = "Import Template" %}

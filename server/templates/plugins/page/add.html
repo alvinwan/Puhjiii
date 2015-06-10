@@ -1,5 +1,6 @@
 {% extends "nest/puhjiii.form.html" %}
-{% block header %}
-<a href="/nest/pages">back</a>
-{% endblock %}
+{% block path %}<a href="{{ url_for('nest.pages') }}">Pages</a> / <span class="nest-path-curr">Pages</span>{% endblock %}
+{% set cancel = url_for('nest.pages') %}
 {% set action = url_for('nest.page_add') %}
+{% set submit = "Create Page" %}
+{% set title = "Add Page" %}

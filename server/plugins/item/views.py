@@ -70,7 +70,7 @@ def item_edit(item_mold, item_id):
 		return item_form(
 			mold=mold,
 		    item=item,
-		    form=EditItemForm.propagate(mold.info)(request.form, data=item.info),
+		    form=EditItemForm.propagate(mold.info)(request.form, **item.info),
 		    plugins = [
 			    ('item.edit', {}),
 			    ('preview.basic',
@@ -102,7 +102,7 @@ def item_add(item_mold):
 				('preview.basic',
 					{
 						'request': request,
-						'path': url_for('public.mold', item_mold=item_mold)
+						'path': url_for('public.items', item_mold=item_mold)
 					}
 				)
 			],

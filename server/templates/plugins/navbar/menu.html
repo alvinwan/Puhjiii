@@ -1,7 +1,10 @@
-<nav>
-    <ul>
-        {% for link in links %}
-        {% include "nest/partials/naventry.html" %}
-        {% endfor %}
-    </ul>
-</nav>
+<div class="nest-panel navbar">
+    <nav>
+        <ul>
+            <span>Hi, {{ current_user.name }}.</span>
+            {% for link in links %}
+            {% include "nest/partials/naventry.html" %}
+            {% endfor %}
+        </ul>
+    </nav>
+</div>

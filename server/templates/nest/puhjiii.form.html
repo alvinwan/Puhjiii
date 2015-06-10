@@ -1,11 +1,14 @@
-{% block header %}
-{% endblock %}
-<nav>
-    <ul>
-        <form method="POST" action="{{ action }}">
-            {% include "nest/partials/form.html" %}
-            <input type="submit">
-            {{ message }}
-        </form>
-    </ul>
-</nav>
+<div class="nest-panel form">
+    <div class="nest-header">
+        <p class="nest-path"><a href="{{ url_for('nest.home') }}">Home</a> / {% block path %}{% endblock %}</p>
+        <p class="nest-back"><a href="{{ cancel }}"><span>&#8592;</span>cancel</a></p>
+        <h1 class="nest-panel-title">{{ title }}</h1>
+    </div>
+    {% block form %}
+    <form class="form-content" method="POST" action="{{ action }}">
+        {% include "nest/partials/form.html" %}
+        <input class="button" type="submit" value="{{ submit }}">
+        {{ message }}
+    </form>
+    {% endblock %}
+</div>

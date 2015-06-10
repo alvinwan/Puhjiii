@@ -11,7 +11,7 @@ roles = [
 	('follower', ['access_nest'])
 ]
 
-plugins = ['code', 'item', 'mold', 'page', 'plugin', 'preview', 'navbar']
+plugins = ['code', 'item', 'mold', 'page', 'plugin', 'preview', 'navbar', 'setting']
 
 public_templates = ['index.html']
 

@@ -30,7 +30,8 @@ def process(obj):
 					fa='fa-mail-reply'
 				))
 			for thing in listdir(abs_path(rel_dir)):
-				if len(rel_dir) > 0 or thing in allowed_roots:
+				if (len(rel_dir) > 0 or thing in allowed_roots) \
+					and thing[0] != '.':
 					file = dict(
 						href=url_path(rel_dir, thing),
 						label=thing
@@ -38,6 +39,9 @@ def process(obj):
 					if isdir(abs_path(rel_dir, thing)):
 						file['href'] += '/'
 						file['fa'] = 'fa-folder'
+						file['label'] += '/'
+					else:
+						file['fa'] = 'fa-file-o'
 					links.append(file)
 	except FileNotFoundError:
 		pass

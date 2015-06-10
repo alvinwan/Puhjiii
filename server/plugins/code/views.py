@@ -37,9 +37,11 @@ def code(path='templates/public/index.html'):
 		form = EditCodeForm(request.form, path=path)
 		if request.method == 'POST':
 			File.write(path, form.code.data)
-		form.code.data = File.read(path)
 		nest.load_plugin('code.edit', path=path)
+		form.code.data = File.read(path)+'\n'
 	except IsADirectoryError:
+		pass
+	except UnicodeDecodeError:
 		pass
 	return render('nest.html', **context(**locals()))
 

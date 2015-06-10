@@ -1,12 +1,25 @@
-<a href="/nest/">main</a>
-<a href="/nest/page/add">add page</a>
-<nav>
-    <ul>
-        {% for page in pages %}
-        <li><a href="{{ url_for('nest.pages', url=page.url) }}">{{page.title}} : /{{page.url}}</a>
-            <a href="{{ url_for('nest.page_edit', url=page.url) }}">(edit)</a>
-            <a href="{{ url_for('nest.page_delete', url=page.url) }}">(delete)</a>
-        </li>
-        {% endfor %}
-    </ul>
-</nav>
+    <div class="nest-panel list">
+        <div class="nest-header">
+            <p class="nest-path"><a href="{{ url_for('nest.home') }}">Home</a> / <span class="nest-path-curr">Pages</span></p>
+            <p class="nest-back"><a href="{{ url_for('nest.home') }}"><span>&#8592;</span>Home</a></p>
+            <h1 class="nest-panel-title">Pages</h1>
+            <div class="nest-actions">
+                <a href="{{ url_for('nest.page_add') }}"><i class="fa fa-plus"></i> Add Page</a>
+            </div>
+        </div>
+        <nav>
+            <ul>
+                {% for page in pages %}
+                <li>
+                    <a href="{{ url_for('nest.pages', url=page.url) }}">
+                        <i class="fa fa-file-o"></i>
+                        {{page.title}}
+                        <span class="page-url">/{{page.url}}</span>
+                    </a>
+                    <a class="edit option" href="{{ url_for('nest.page_edit', url=page.url) }}"><i class="fa fa-gear"></i>Edit</a>
+                    <a class="trash" href="{{ url_for('nest.page_delete', url=page.url) }}"><i class="fa fa-trash-o"></i></a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>

@@ -1,10 +1,6 @@
-<a href="{{ url_for('nest.molds') }}">back</a>
-<nav>
-    <ul>
-        <form method="POST" action="{{ url_for('nest.mold_edit', item_mold=mold.name) }}">
-            {% include "nest/partials/form.html" %}
-            <input type="submit">
-            {{ message }}
-        </form>
-    </ul>
-</nav>
+{% extends "nest/puhjiii.form.html" %}
+{% block path %}<a href="{{ url_for('nest.molds') }}">Molds</a> / <span class="nest-path-curr">{{ mold.name }}s</span>{% endblock %}
+{% set cancel = url_for('nest.molds') %}
+{% set action = url_for('nest.mold_edit', item_mold=mold.name) %}
+{% set submit = "Save" %}
+{% set title = "Edit "+mold.name %}

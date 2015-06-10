@@ -1,0 +1,221 @@
+* {
+	margin:0;
+	padding:0;
+	position:relative;
+	font-family:'Raleway';
+}
+p a, br, span, i, q, b, strong {
+	float:none;
+}
+a {
+	display:inline-block;
+		text-decoration:none;
+}
+.setup-1 {
+	padding:9em 15%;
+}
+h1,h2,h3 {
+	width:100%;
+}
+html {
+	background-color:#eee;
+}
+h1 {
+	font-weight:100;
+	font-size:4em;
+	color:#333;
+	text-transform:uppercase;
+	padding-top:0.35em;
+}
+	h2 {
+		font-size:2em;
+		color:#666;
+		font-weight:300;
+		text-transform:uppercase;
+	}
+	h1 + p {
+		font-family:'Raleway';
+		text-transform:uppercase;
+		font-weight:600;
+		padding:1em 0;
+		font-size:1em;
+		line-height:100%;
+	}
+	p {
+		font-family:'Source Sans Pro';
+		font-size:0.9em;
+		font-weight:400;
+		line-height:200%;
+		color:#666;
+		padding:2em 0;
+	}
+	.button, select {
+		width:300px;
+	}
+	.button {
+		margin-top:5em;
+		border:2px solid #000;
+		color:#000;
+		text-transform:uppercase;
+		letter-spacing:2px;
+		font-size:0.75em;
+		font-weight:600;
+		text-align:center;
+		padding:1.5em;
+		background:transparent;
+		cursor:pointer;
+	}
+		.button:hover {
+			background-color:#000;
+			color:#FFF;
+		}
+	.setup-1,.setup-2m,.setup-3 {
+		z-index:100;
+	}
+		div[class^="setup-"] {
+			width:100%;
+			height:100%;
+			box-sizing:border-box;
+			-moz-box-sizing:border-box;
+		}
+		.setup-3 {
+			text-align:center;
+			padding-top:8em;
+		}
+			.setup-3 img {
+				float:none;
+				display:inline-block;
+				width:30px;
+				margin-bottom:2em;
+			}
+		.setup-2 * {
+			float:right;
+		}
+		.setup-2 {
+			float:right;
+			padding:7.5em;
+			text-align:right;
+			width:40%;
+			max-width:350px;
+		}
+			.setup-2 div {
+				width:100%;
+			}
+			.setup-2 p {
+				width:500px;
+			}
+	.setup-1-bg,.setup-2-bg {
+		z-index:-1;
+		width:100%;
+		position:fixed;
+		top:0;
+		right:0;
+		height:100%;
+		overflow:hidden;
+	}
+		.setup-1-bg img {
+			float:left;
+			margin-left:50%;
+		}
+		.setup-2-bg img {
+			margin-right:70%;
+			float:right;
+		}
+	.logo {
+		position:fixed;
+		top:0;
+		left:0;
+		padding:3em;
+		width:35px;
+	}
+	input {
+		background-color:#FFF;
+		border:none;
+		outline:none;
+		padding:1em 1.5em;
+		font-family:'Source Sans Pro';
+		font-weight:400;
+		box-sizing:border-box;
+		-moz-box-sizing:border-box;
+		width:100%;
+		max-width:300px;
+		font-size:1em;
+		color:#666;
+	}
+	label {
+		text-transform:uppercase;
+		color:#666;
+		font-size:0.85em;
+		margin-bottom:0.5em;
+		float:left;
+		position:absolute;
+		right:100%;
+		font-weight:600;
+		margin:10px 0;
+	}
+		label span {
+			width:200px;
+			font-family:'Source Sans Pro';
+			text-transform:none;
+			font-size:1.25em;
+			font-weight:400;
+			color:#999;
+		}
+		.setup-2 div + div {
+			margin-top:1.5em;
+		}
+	select {
+		background-color:#222;
+		color:#CCC;
+		border:none;
+		outline:none;
+		border-radius: 0;
+		padding:1em 1.5em;
+		font-weight:400;
+		font-family:'Source Sans Pro';
+		-webkit-appearance:none;
+		-moz-appearance:none;
+		font-size:0.9em;
+		z-index:1;
+	}
+		.select-arrow {
+			position:absolute;
+			bottom:1.25em;
+			right:1.5em;
+			color:#CCC;
+			font-weight:600;
+			z-index:10;
+		}
+		select:hover {
+			background-color:#000;
+		}
+		select:hover,.form-content select:hover + .select-arrow {
+			color:#FFF;
+		}
+		div + h3 {
+			margin-top:3em;
+		}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Source Sans Pro'), local('SourceSansPro-Regular'), url(http://fonts.gstatic.com/s/sourcesanspro/v9/ODelI1aHBYDBqgeIAH2zlEY6Fu39Tt9XkmtSosaMoEA.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 100;
+  src: local('Raleway Thin'), local('Raleway-Thin'), url(http://fonts.gstatic.com/s/raleway/v9/RJMlAoFXXQEzZoMSUteGWCZ2oysoEQEeKwjgmXLRnTc.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Raleway Light'), local('Raleway-Light'), url(http://fonts.gstatic.com/s/raleway/v9/-_Ctzj9b56b8RgXW8FAricDdSZkkecOE1hvV7ZHvhyU.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Raleway SemiBold'), local('Raleway-SemiBold'), url(http://fonts.gstatic.com/s/raleway/v9/xkvoNo9fC8O2RDydKj12b8DdSZkkecOE1hvV7ZHvhyU.ttf) format('truetype');
+}

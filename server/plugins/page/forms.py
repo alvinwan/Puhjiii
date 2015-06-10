@@ -1,5 +1,6 @@
 from server.forms import Form, DynamicForm, wtf
 from server.auth.libs import File
+from wtforms import validators
 
 
 class PageForm(DynamicForm):
@@ -11,7 +12,7 @@ class PageForm(DynamicForm):
 class AddPageForm(PageForm):
 	title = wtf.StringField('Page Title')
 	template = wtf.SelectField('Template')
-	url = wtf.StringField('URL')
+	url = wtf.StringField('URL', [validators.required()])
 
 
 class EditPageForm(PageForm):

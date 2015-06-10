@@ -41,7 +41,8 @@ def page_form(page, form, plugins, url=''):
 	except NotUniqueError:
 		message = 'URL already taken by another page.'
 	except DoesNotExist as e:
-		message = str(e)
+		Template(path="public/"+form.template.data).save()
+		return page_form(page, form, plugins, url)
 	return render_error(message)
 
 

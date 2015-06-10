@@ -15,9 +15,3 @@ def home():
 	nest.load_plugin('navbar')
 	nest.load_plugin('preview.basic', path='', request=request)
 	return render('nest.html', **context(nest))
-
-
-@mod_nest.route("/settings")
-@login_required
-def settings():
-	return make_response('<a href="/nest">main</a>No settings')

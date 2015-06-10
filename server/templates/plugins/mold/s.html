@@ -1,13 +1,21 @@
-<a href="{{ url_for('nest.home') }}">main</a>
-<a href="{{ url_for('nest.mold_add') }}">+ add mold</a>
-<nav>
-    <ul>
-        {% for mold in molds %}
-        <li>
-            <a href="{{ url_for('nest.mold', item_mold=mold.name) }}">{{mold.name}}</a>
-            <a href="{{ url_for('nest.mold_edit', item_mold=mold.name) }}">(edit)</a>
-            <a href="{{ url_for('nest.mold_delete', item_mold=mold.name) }}">(delete)</a>
-        </li>
-        {% endfor %}
-    </ul>
-</nav>
+    <div class="nest-panel list">
+        <div class="nest-header">
+            <p class="nest-path"><a href="{{ url_for('nest.home') }}">Home</a> / <span class="nest-path-curr">Molds</span></p>
+            <p class="nest-back"><a href="{{ url_for('nest.home') }}"><span>&#8592;</span>Home</a></p>
+            <h1 class="nest-panel-title">Molds</h1>
+            <div class="nest-actions">
+                <a href="{{ url_for('nest.mold_add') }}"><i class="fa fa-plus"></i> Add Mold</a>
+            </div>
+        </div>
+        <nav class="items-content">
+            <ul>
+                {% for mold in molds %}
+                <li>
+                    <a href="{{ url_for('nest.mold', item_mold=mold.name) }}">{{ mold.name }}</a>
+                    <a class="edit option" href="{{ url_for('nest.mold_edit', item_mold=mold.name) }}"><i class="fa fa-gear"></i>Edit</a>
+                    <a class="trash" href="{{ url_for('nest.mold_delete', item_mold=mold.name) }}"><i class="fa fa-trash-o"></i></a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
