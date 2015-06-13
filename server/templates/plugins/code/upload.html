@@ -1,12 +1,13 @@
 {% extends "nest/puhjiii.form.html" %}
 {% block path %}<a href="{{ url_for('nest.codes') }}">Code</a> / <span class="nest-path-curr">Upload</span>{% endblock %}
 {% set cancel = url_for('nest.codes') %}
-{% set title = "Edit Page" %}
+{% set title = "Upload Template" %}
 <a href="{{ url_for('nest.home') }}">main</a>
 {% block form %}
 <form class="form-content" action="{{ url_for('nest.code_upload') }}" method="post" enctype="multipart/form-data">
     <div>
         <label>Select Files</label>
+        {{ form.files_info|markdown|safe }}
         {{ form.files(multiple='') }}
     </div>
     {% if message %}

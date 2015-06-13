@@ -1,7 +1,8 @@
+from server.auth.models import Document
 from server import db
 
 
-class Mold(db.Document):
+class Mold(Document):
 	name = db.StringField(unique=True)
 	info = db.DictField()
 	page = db.StringField()

@@ -10,13 +10,15 @@ class Mold(Puhjiii):
 	def add_fields(self, info):
 		fields = {}
 		for k in info.split(','):
-			if ':' in k:
-				k, v = [s.strip() for s in k.split(':')]
-				if not hasattr(wtf, v):
-					raise UserWarning('No such field')
-				fields[k] = v
-			else:
-				fields[k.strip()] = 'StringField'
+			k = k.strip()
+			if len(k) > 0:
+				if ':' in k:
+					k, v = [s.strip() for s in k.split(':')]
+					if not hasattr(wtf, v):
+						raise UserWarning('No such field "%s"' % v)
+					fields[k] = v
+				else:
+					fields[k] = 'StringField'
 		self.info = fields
 		return self
 

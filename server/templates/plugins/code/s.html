@@ -1,22 +1,25 @@
-        <div class="nest-panel list code dark">
-            <div class="nest-header">
-                <p class="nest-path"><a href="{{ url_for('nest.home') }}">Home</a> / <span class="nest-path-curr">Code</span></p>
-                <p class="nest-back"><a href="{{ url_for('nest.home') }}"><span>&#8592;</span>Home</a></p>
-                <h1 class="nest-panel-title">Code</h1>
-                <div class="nest-actions">
+{% extends "nest/puhjiii.list.html" %}
+{% set panel="list code dark" %}
+{% block path %}<span class="nest-path-curr">Code</span>{% endblock %}
+{% set cancel = url_for('nest.home') %}
+{% set title = "Code" %}
+{% block actions %}
                     <a href="{{ url_for('nest.code_import') }}"><i class="fa fa-plus"></i> Import</a>
                     <a href="{{ url_for('nest.code_upload') }}"><i class="fa fa-plus"></i> Upload</a>
-                </div>
-            </div>
+{% endblock %}
+{% set empty_note="No files in this directory" %}
+{% set items = links %}
+{% block items %}
             <nav class="items-content">
+                <p class="nest-path">{{ codepath|safe }}</p>
                 <ul>
                     {% for link in links %}
                     <li>
-                        <a href="{{ link.href }}">
+                        <a href="{{ link.href }}" class="{{ link.class_ }}">
                             <p><i class="fa {{ link.fa }}"></i>{{ link.label }}</p>
                         </a>
                     </li>
                     {% endfor %}
                 </ul>
             </nav>
-        </div>
+{% endblock %}

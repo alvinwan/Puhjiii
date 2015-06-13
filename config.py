@@ -20,7 +20,7 @@ import os
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # conditional log_level printing
-LOG_LEVEL = 2
+LOG_LEVEL = 0
 
 
 def output(message, level=1):

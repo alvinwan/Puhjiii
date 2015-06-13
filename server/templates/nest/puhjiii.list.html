@@ -1,0 +1,11 @@
+{% extends "nest/puhjiii.panel.html" %}
+{% block content %}
+    {% if items|length == 0 %}
+                    <div class="note">
+                        <p><i class="fa fa-folder-open-o"></i>{{ empty_note|safe }}</p>
+                    </div>
+    {% else %}
+            {% block items %}
+            {% endblock %}
+    {% endif %}
+{% endblock %}

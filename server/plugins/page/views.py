@@ -1,6 +1,7 @@
 from flask import request, redirect, url_for
 from flask_login import current_user, login_required
-from server.views import render, context, render_error
+from server.auth.libs import Alert
+from server.views import render, context, render_error, redirect_error
 from server.nest.libs import Nest
 from server import mod_nest, mod_public
 from .libs import Page
@@ -22,7 +23,7 @@ def pages(url=''):
 	return render('nest.html', **context(nest))
 
 
-def page_form(page, form, plugins, url=''):
+def page_form(page, form, plugins, error, alert, url=''):
 	nest = Nest(current_user, request)
 	try:
 		nest.load_plugins(*plugins)
@@ -34,6 +35,7 @@ def page_form(page, form, plugins, url=''):
 			     template="public/"+form.template.data,
 			     url=form.url.data,
 			     info=template.defaults).save()
+			alert.log()
 			return redirect(url_for('nest.page_edit', url=form.url.data))
 		return render('nest.html', **context(**locals()))
 	except (TemplateNotFound, FileNotFoundError) as e:
@@ -41,9 +43,9 @@ def page_form(page, form, plugins, url=''):
 	except NotUniqueError:
 		message = 'URL already taken by another page.'
 	except DoesNotExist as e:
-		Template(path="public/"+form.template.data).save()
-		return page_form(page, form, plugins, url)
-	return render_error(message)
+		Template(path="public/"+form.template.data).import_path().save()
+		return page_form(page, form, plugins, url, alert)
+	return redirect_error(message, error)
 
 
 @mod_nest.route("/page/add", methods=['POST', 'GET'])
@@ -52,6 +54,8 @@ def page_add():
 	return page_form(
 		page=Page(),
 		form=AddPageForm(request.form),
+	    error=url_for('nest.page_add'),
+	    alert=Alert('Page created.', class_='okay'),
 		plugins=[
 			('page.add', {}),
 			('preview.basic',
@@ -63,9 +67,12 @@ def page_add():
 def page_edit(url):
 	try:
 		page = Page(url=url).get()
+		page.template = page.template.replace('public/', '')
 		return page_form(
 			page=page,
 			form=EditPageForm(request.form, page),
+		    error=url_for('nest.page_edit', url=url),
+		    alert=Alert('Page %s updated.' % url, class_='okay'),
 		    plugins=[
 			    ('page.edit', {}),
 			    ('preview.interactive',
@@ -78,7 +85,7 @@ def page_edit(url):
 		    ],
 			url=url)
 	except DoesNotExist as e:
-		return render_error(str(e))
+		return redirect_error(str(e), url_for('nest.pages'))
 
 
 @mod_nest.route("/page/iedit/<path:url>", methods=['POST'])
@@ -95,7 +102,7 @@ def page_iedit(url):
 			molds=request.form['molds'])
 		return redirect(url_for('nest.page_edit', url=url))
 	except DoesNotExist as e:
-		return render_error(str(e))
+		return redirect_error(str(e), url_for('nest.pages'))
 
 
 @mod_nest.route("/page/delete/<path:url>")
@@ -103,23 +110,20 @@ def page_iedit(url):
 def page_delete(url):
 	try:
 		Page(url=url).delete()
+		Alert('Paged %s deleted' % url, class_='okay').log()
 		return redirect(url_for('nest.pages'))
 	except DoesNotExist:
-		return render_error('No such page exists.')
+		return redirect_error('No such page exists.', url_for('nest.pages'))
 
 
-def add_urls():
-	for page in Page.model.objects().all():
-		def generate():
+for page in Page.model.objects().all():
+	def generate(page):
+		def helper():
 			nonlocal page
 			try:
 				page.reload()
 			except DoesNotExist:
 				page = Page.model.objects(url=page.url).get()
 			return render(page.template, mod='public', **page.info)
-		mod_public.add_url_rule(
-			join('/', page.url),
-			page.title,
-			generate)
-		
-add_urls()
+		mod_public.add_url_rule(join('/', page.url), page.title, helper)
+	generate(page)

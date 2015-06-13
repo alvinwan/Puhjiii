@@ -1,12 +1,14 @@
-    <div class="nest-panel list">
-        <div class="nest-header">
-            <p class="nest-path"><a href="{{ url_for('nest.home') }}">Home</a> / <span class="nest-path-curr">Molds</span></p>
-            <p class="nest-back"><a href="{{ url_for('nest.home') }}"><span>&#8592;</span>Home</a></p>
-            <h1 class="nest-panel-title">Molds</h1>
-            <div class="nest-actions">
-                <a href="{{ url_for('nest.mold_add') }}"><i class="fa fa-plus"></i> Add Mold</a>
-            </div>
-        </div>
+{% extends "nest/puhjiii.panel.html" %}
+{% set panel="list" %}
+{% block path %}<span class="nest-path-curr">Molds</span>{% endblock %}
+{% set cancel = url_for('nest.home') %}
+{% set title = "Molds" %}
+{% block actions %}
+                    <a href="{{ url_for('nest.mold_add') }}"><i class="fa fa-plus"></i> Add Mold</a>
+{% endblock %}
+{% set empty_note = 'No molds found. <a href="'+url_for('nest.mold_add')+'">Add a mold now.</a>' %}
+{% set items = molds %}
+{% block content %}
         <nav class="items-content">
             <ul>
                 {% for mold in molds %}
@@ -18,4 +20,4 @@
                 {% endfor %}
             </ul>
         </nav>
-    </div>
+{% endblock %}

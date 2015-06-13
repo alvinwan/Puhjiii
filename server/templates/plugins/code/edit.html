@@ -1,12 +1,17 @@
-<div class="nest-panel editor">
-    <pre class="line-numbers"><code class="language-{{ language or "markup" }}" placeholder="">{{ form.code.data or ""}}</code></pre>
-</div>
-<link href="/static/libraries/prism/twilight.css" rel="stylesheet">
-<script src="/static/libraries/prism/prism.min.js"></script>
-<script src="/static/libraries/editablediv/jquery.editablediv.js"></script>
-<script>$('code').editableDiv();</script>
-<form style="display:none" method="POST" action="{{ url_for('nest.code', path=path) }}">
-    {% include "nest/partials/form.html" %}
-    <a href="{{ url_for('nest.code', path=path) }}">cancel</a>
-    <input type="submit">
-</form>
+
+        <div class="nest-panel editor">
+            <pre class="line-numbers"><code id="editor" class="language-{{ language or "markup" }}" placeholder="">{{ form.code.data or ""}}</code></pre>
+            <form method="POST" action="{{ url_for('nest.code', path=path) }}">
+                <div style="display:none">
+                {% include "nest/partials/form.html" %}
+                </div>
+                <div class="nest-bar">
+                    <a class="button" href="{{ url_for('nest.code', path=path) }}">cancel</a>
+                    <input class="button" type="submit" value="Save">
+                </div>
+            </form>
+        </div>
+        <link href="/static/libraries/prism/twilight.css" rel="stylesheet">
+        <script src="/static/libraries/prism/prism.min.js"></script>
+        <script src="/static/libraries/editablediv/jquery.editablediv.js"></script>
+        <script src="/static/nest/scripts/code.js"></script>

@@ -5,6 +5,7 @@ from os.path import join, isdir
 from os import listdir
 
 from flask_login import UserMixin
+from server import store
 
 
 class User(UserMixin, Puhjiii):
@@ -117,3 +118,39 @@ class File:
 		"""
 		base = File.abs(path)
 		return [f for f in listdir(base) if not isdir(join(base, f))]
+	
+	
+class Alert:
+	
+	def __init__(self, message, class_='notokay'):
+		self.message = message
+		self.class_ = class_
+		
+	@staticmethod
+	def check():
+		"""
+		Checks for alerts in session
+		:return: alert or None
+		"""
+		if 'alert' in store:
+			data = store.get('alert')
+			store.delete('alert')
+			return Alert(**data)
+		
+	def log(self):
+		"""
+		Save alert in session.
+		:return: self
+		"""
+		store.put('alert', {
+			'message': self.message, 
+			'class_': self.class_
+		})
+		return self
+	
+	def __str__(self):
+		"""
+		Returns the message
+		:return: str
+		"""
+		return self.message

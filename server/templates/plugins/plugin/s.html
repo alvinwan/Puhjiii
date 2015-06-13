@@ -1,24 +1,24 @@
-    <div class="nest-panel list">
-        <div class="nest-header">
-            <p class="nest-path"><a href="{{ url_for('nest.home') }}">Home</a> / <span class="nest-path-curr">Plugins</span></p>
-            <p class="nest-back"><a href="{{ url_for('nest.home') }}"><span>&#8592;</span>Home</a></p>
-            <h1 class="nest-panel-title">Plugins</h1>
-        </div>
+{% extends "nest/puhjiii.panel.html" %}
+{% set panel="list" %}
+{% block path %}<span class="nest-path-curr">Plugins</span>{% endblock %}
+{% set cancel = url_for('nest.home') %}
+{% set title = "Plugins" %}
+{% block content %}
         <nav class="items-content">
             <ul>
                 {% for plugin in plugins %}
                 <li>
                     <a>{{ plugin.name }}</a>
-                    <span class="edit option">
-                        {% if plugin.is_active %}
-                        <a href="{{ url_for('nest.plugin_deactivate', plugin_name=plugin.name) }}"><i class="fa fa-gear"></i> deactivate</a>
-                        {% else %}
-                        <a href="{{ url_for('nest.plugin_activate', plugin_name=plugin.name) }}"><i class="fa fa-gear"></i> activate</a>
-                        {% endif %}
-                        <a href="{{ url_for('nest.code', path='plugins/'+plugin.name+'/') }}"><i class="fa fa-terminal"></i> Edit</a>
-                    </span>
+                            <span class="edit option">
+                                {% if plugin.is_active %}
+                                <a href="{{ url_for('nest.plugin_deactivate', plugin_name=plugin.name) }}"><i class="fa fa-gear"></i> deactivate</a>
+                                {% else %}
+                                <a href="{{ url_for('nest.plugin_activate', plugin_name=plugin.name) }}"><i class="fa fa-gear"></i> activate</a>
+                                {% endif %}
+                                <a href="{{ url_for('nest.code', path='plugins/'+plugin.name+'/') }}"><i class="fa fa-terminal"></i> Edit</a>
+                            </span>
                 </li>
                 {% endfor %}
             </ul>
         </nav>
-    </div>
+{% endblock %}

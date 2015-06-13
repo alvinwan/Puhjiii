@@ -1,10 +1,10 @@
 {% if form %}
 {% for k, v in form._fields.items() %}
                 <div>
-                    {% if v.copy %}
-                    <p>{{ v.copy }}</p>
-                    {% endif %}
                     {{ v.label }}
+                    {% if form[k+"_info"] %}
+                    {{ form[k+"_info"]|markdown|safe }}
+                    {% endif %}
                     {{ v(placeholder=v.name) }}
                 </div>
 {% endfor %}

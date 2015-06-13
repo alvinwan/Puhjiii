@@ -46,7 +46,7 @@ class Puhjiii:
 		self.result = self.model.objects(**self.filters).modify(
 			upsert=True,
 			new=True,
-		    **{'set__%s' % k: v for k, v in self.data().items()}
+		    **{'set__%s' % k: v for k, v in self.data(defaults=True).items()}
 		)
 		data = Puhjiii._data(self, self.result)
 		return self.load(**data)
@@ -68,17 +68,25 @@ class Puhjiii:
 			setattr(self, k, v)
 		return self	
 		
-	def data(self):
+	def data(self, defaults=False):
 		"""
 		Returns all data associated with object
 		:return: data for specified fields, or all data
 		"""
-		return Puhjiii._data(self, self)
+		return Puhjiii._data(self, self, defaults)
 	
 	@staticmethod
-	def _data(self, obj):
-		return {f: getattr(obj, f) for f in self.fields() if hasattr(obj, f)}
-		
+	def _data(self, obj, defaults=False):
+		data = {}
+		for f, v in self.fields().items():
+			if f.startswith('updated_'):
+				setattr(obj, f, None)
+			if getattr(obj, f, None):
+				data[f] = getattr(obj, f)
+			elif getattr(v, 'default') and defaults:
+				data[f] = v.default()
+		return data
+
 	def fields(self):
 		"""
 		Fetches all fields based on this object's model
@@ -91,9 +99,9 @@ class Puhjiii:
 		"""
 		Fetches all fields for a model
 		:param model: model
-		:return: list of fields
+		:return: dictionary of fields
 		"""
-		return [k for k, v in model._fields.items() if not isinstance(k, int)]
+		return {k: v for k, v in model._fields.items() if not isinstance(k, int)}
 		
 	def __str__(self):
 		"""

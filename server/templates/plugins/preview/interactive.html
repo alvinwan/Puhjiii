@@ -1,7 +1,14 @@
-<iframe src="{{src}}"></iframe>
-<form method="POST" action="{{ action }}">
-    {% for k, v in interactive_form._fields.items() %}
-    <div>{{ v.label }}: {{ v() }}</div>
-    {% endfor %}
-    <input type="submit">
-</form>
+        <div class="nest-panel">
+            <iframe src="{{src}}"></iframe>
+            <form method="POST" action="{{ action }}">
+                <div style="display:none">
+                {% for k, v in interactive_form._fields.items() %}
+                <div>{{ v.label }}: {{ v() }}</div>
+                {% endfor %}
+                </div>
+                <div class="nest-bar">
+                    <a href="#" class="button">Cancel</a>
+                    <input class="button" type="submit" value="save">
+                </div>
+            </form>
+        </div>

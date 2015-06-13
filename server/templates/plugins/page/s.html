@@ -1,12 +1,14 @@
-    <div class="nest-panel list">
-        <div class="nest-header">
-            <p class="nest-path"><a href="{{ url_for('nest.home') }}">Home</a> / <span class="nest-path-curr">Pages</span></p>
-            <p class="nest-back"><a href="{{ url_for('nest.home') }}"><span>&#8592;</span>Home</a></p>
-            <h1 class="nest-panel-title">Pages</h1>
-            <div class="nest-actions">
-                <a href="{{ url_for('nest.page_add') }}"><i class="fa fa-plus"></i> Add Page</a>
-            </div>
-        </div>
+{% extends "nest/puhjiii.panel.html" %}
+{% set panel="list" %}
+{% block path %}<span class="nest-path-curr">Pages</span>{% endblock %}
+{% set cancel = url_for('nest.home') %}
+{% set title = "Pages" %}
+{% block actions %}
+                    <a href="{{ url_for('nest.page_add') }}"><i class="fa fa-plus"></i> Add Page</a>
+{% endblock %}
+{% set empty_note = 'No pages found. <a href="'+url_for('nest.page_add')+'">Add a page now.</a>' %}
+{% set items = pages %}
+{% block content %}
         <nav>
             <ul>
                 {% for page in pages %}
@@ -22,4 +24,4 @@
                 {% endfor %}
             </ul>
         </nav>
-    </div>
+{% endblock %}

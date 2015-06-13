@@ -105,6 +105,14 @@ class Template(Puhjiii):
 		soup, self.defaults = self.import_template(self.html, self.path)
 		self.save()
 		return self
+	
+	def import_path(self):
+		"""
+		Imports from the specified path.
+		:return: self
+		"""
+		self.html = File.read('templates/'+self.path)
+		return self.import_html()
 
 	def generate_defaults(self):
 		"""

@@ -5,7 +5,8 @@ def process(data):
 	try:
 		language = {
 			'html': 'markup',
-		    'py': 'python'
+		    'py': 'python',
+		    'js': 'javascript'
 		}[ext]
 	except KeyError:
 		language = ext

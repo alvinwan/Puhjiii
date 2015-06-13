@@ -1,20 +1,21 @@
-    <div class="nest-panel list">
-        <div class="nest-header">
-            <p class="nest-path"><a href="{{ url_for('nest.home') }}">Home</a> / <span class="nest-path-curr">{{ item_mold }}s</span></p>
-            <p class="nest-back"><a href="{{ url_for('nest.home') }}"><span>&#8592;</span>Home</a></p>
-            <h1 class="nest-panel-title">{{ item_mold }}s</h1>
-            <div class="nest-actions">
-                <a href="{{ url_for('nest.item_add', item_mold=item_mold) }}"><i class="fa fa-plus"></i> add {{item_mold}}</a>
-                <a href="{{ url_for('nest.mold_edit', item_mold=item_mold) }}"><i class="fa fa-gears"></i> edit</a>
-            </div>
-        </div>
+{% extends "nest/puhjiii.list.html" %}
+{% set panel="list" %}
+{% block path %}<span class="nest-path-curr">{{ item_mold }}s</span>{% endblock %}
+{% set cancel = url_for('nest.home') %}
+{% set title = item_mold+"s" %}
+{% block actions %}
+                    <a href="{{ url_for('nest.item_add', item_mold=item_mold) }}"><i class="fa fa-plus"></i> add {{item_mold}}</a>
+                    <a href="{{ url_for('nest.mold_edit', item_mold=item_mold) }}"><i class="fa fa-gears"></i> edit</a>
+{% endblock %}
+{% set empty_note = 'No '+item_mold+'s found. <a href="'+url_for('nest.item_add', item_mold=item_mold)+'">Add '+item_mold+'s now.</a>' %}
+{% block items %}
         <nav class="items-content">
             <ul>
                 {% for item in items %}
                 <li>
                     <a href="{{ url_for('nest.item', item_mold=item_mold, item_id=item.id) }}">
                         <h2>{{item.info.title or "[No Title]"}}</h2>
-                        <p class="item-sub">{{ item.created_at }} &middot; {{item.author.name or "Anonymous"}}</p>
+                        <p class="item-sub">{{ item.updated_at|timedelta }} &middot; {{item.author.name or "Anonymous"}}</p>
                     </a>
                     <a class="edit option" href="{{ url_for('nest.item_edit', item_mold=item_mold, item_id=item.id) }}"><i class="fa fa-gear"></i>Edit</a>
                     <a class="trash" href="{{ url_for('nest.item_delete', item_mold=item_mold, item_id=item.id) }}"><i class="fa fa-trash-o"></i></a>
@@ -22,4 +23,4 @@
                 {% endfor %}
             </ul>
         </nav>
-    </div>
+{% endblock %}

@@ -24,9 +24,18 @@ html a {
 	font-style:inherit;
 	text-transform:inherit;
 	text-decoration:none;
+	font-family:inherit;
+	font-weight:inherit;
 }
 	html a:hover {
 		text-decoration:none;
+		color:#C90;
+	}
+	p a {
+		border-bottom:1px dotted #CCC;
+	}
+	p a:hover {
+		border-bottom:1px solid #C90;
 	}
 html, body {
 	width:100%;
@@ -50,9 +59,6 @@ html, body {
 		.nest-path a {
 			border-bottom:1px dotted #999;
 		}
-		.nest-path a:hover {
-			border-bottom:1px solid #999;
-		}
 	.nest-path-curr {
 		color:#333;
 	}
@@ -73,6 +79,9 @@ html, body {
 		font-size:1em;
 		margin-bottom:2em;
 	}
+		div .nest-back a {
+			border-bottom:none;
+		}
 		.dark .nest-back {
 			color:#666;
 		}
@@ -125,13 +134,15 @@ html, body {
 .nest-panel {
 	float:left;
 	background-color:#f6f6f6;
-	padding-bottom:2em;
 	height:100%;
 	overflow-y:scroll;
 	overflow-x:hidden;
 	box-sizing:border-box;
 	-moz-box-sizing:border-box;
 }
+	.nest-panel:first-child {
+		padding-bottom:5em;
+	}
 	.form form {
 		padding:0 3em;
 	}
@@ -141,7 +152,7 @@ html, body {
 			color:#666;
 			line-height:150%;
 			font-weight:400;
-			padding:1.5em 0;
+			padding:0.5em 0;
 		}
 		.form-content input, .form-content textarea {
 			width:100%;
@@ -202,6 +213,9 @@ html, body {
 		}
 			.dark.list li a {
 				color:#eee;
+			}
+			.dark.list a.s {
+				background-color:rgba(255,255,255,0.1)
 			}
 			.dark.list li:hover a {
 				color:#FFF;
@@ -270,6 +284,10 @@ html, body {
 			color:#666;
 			margin-bottom:0;
 		}
+			.dark .items-content > p {
+				color:#CCC;
+				padding:0.5em 3.5em;
+			}
 		.items-search {
 			width:100%;
 			border:none;
@@ -278,6 +296,17 @@ html, body {
 			padding:1em 3em;
 			font-weight:400;
 		}
+		.note {
+			margin:1.5em 3em;
+			padding:1.5em 2em;
+			background-color:#eee;
+		}
+			.note p {
+				font-family:'Source Sans Pro';
+				font-size:1em;
+				font-weight:400;
+				margin-bottom:0;
+			}
 	.navbar {
 		text-transform:uppercase;
 		font-weight:bold;
@@ -325,12 +354,65 @@ html, body {
 			word-break:normal;
 			word-wrap:nowrap;
 		}
+	.banner {
+		padding:25px 3em;
+	}
+	.banner.okay {
+		background-color:#769950;
+	}
+	.banner.notokay {
+		background-color:#b74f43;
+	}
+		.banner p {
+			margin:0;
+			color:#FFF;
+			font-family:'Source Sans Pro';
+			font-weight:400;
+			text-align:center;
+			width:100%;
+		}
+			.banner p a {
+				font-family:inherit;
+				font-weight:inherit;
+				border-bottom:1px dotted #FFF;
+			}
+			.banner p a:hover {
+				border-bottom:1px solid #FFF;
+				color:#FFF;
+			}
 	iframe {
 		width:100%;
 		height:100%;
 		outline:none;
 		border:none;
 	}
+		.nest-bar {
+			position:absolute;
+			bottom:0;
+			left:0;
+			width:100%;
+			background-color:rgba(35,35,35,0.90);
+			box-sizing:border-box;
+			padding:2em 3em;
+			z-index:100;
+		}
+		.nest-bar .button {
+			width:45%;
+			border:2px solid #FFF;
+			color:#FFF;
+			display:inline-block;
+			text-align:center;
+		}
+			.nest-bar .button:hover {
+				background-color:#FFF;
+				color:#000;
+			}
+			.nest-bar .button {
+				margin-left:2.5%;
+			}
+			.nest-bar a.button {
+				opacity:0.5;
+			}
 /* -- counter unwanted prism styles -- */
 html .editor pre {
 	margin: 0;
@@ -343,6 +425,9 @@ html .editor pre {
 	border:none;
 	box-shadow:none;
 	background:transparent;
+	height:99%;
+	overflow-y:scroll;
+	padding-bottom:10em;
 }
 @font-face {
   font-family: 'Source Sans Pro';

@@ -2,15 +2,16 @@ from flask import request, redirect, url_for
 from flask_login import current_user, login_required
 
 from server import mod_nest, mod_public
+from server.auth.libs import Alert
 from server.plugins.page.libs import Page
-from server.views import render, context, render_error
+from server.views import render, context, render_error, redirect_error
 from server.nest.libs import Nest
 from .libs import Item
 from server.plugins.mold.libs import Mold
 from .forms import EditItemForm, AddItemForm
 
 from jinja2.exceptions import TemplateNotFound, TemplatesNotFound
-from mongoengine.errors import DoesNotExist
+from mongoengine.errors import DoesNotExist, ValidationError
 
 
 """
@@ -20,7 +21,7 @@ Nest URLs
 """
 
 
-def nest_items(item_mold, url):
+def nest_items(item_mold, url, error):
 	nest = Nest(current_user, request)
 	try:
 		mold = Mold(name=item_mold).get()
@@ -30,7 +31,7 @@ def nest_items(item_mold, url):
 		                 request=request)
 		return render('nest.html', **context(**locals()))
 	except DoesNotExist as e:
-		return render_error(str(e))
+		return redirect_error('No mold "%s" exists.' % item_mold, error)
 
 
 @mod_nest.route("/mold/<string:item_mold>")
@@ -38,7 +39,8 @@ def nest_items(item_mold, url):
 def mold(item_mold):
 	return nest_items(
 		item_mold=item_mold, 
-		url=url_for('public.items', item_mold=item_mold))
+		url=url_for('public.items', item_mold=item_mold),
+		error=url_for('nest.molds'))
 
 
 @mod_nest.route("/item/<string:item_mold>/<string:item_id>")
@@ -46,19 +48,21 @@ def mold(item_mold):
 def item(item_mold, item_id):
 	return nest_items(
 		item_mold=item_mold,
-		url=url_for('public.item', item_mold=item_mold, item_id=item_id))
+		url=url_for('public.item', item_mold=item_mold, item_id=item_id),
+		error=url_for('nest.mold', item_mold=item_mold))
 
 
-def item_form(mold, item, form, plugins, forward, item_mold, item_id=None):
+def item_form(mold, item, form, plugins, forward, item_mold, error, alert, item_id=None):
 	nest = Nest(current_user, request)
 	try:
 		nest.load_plugins(*plugins)
 		if request.method == 'POST' and form.validate():
 			item.load(mold=mold).assemble(form).save()
+			alert.log()
 			return redirect(forward)
 		return render('nest.html', **context(**locals()))
 	except RuntimeError as e:
-		return render_error(str(e))
+		return redirect_error(str(e), error)
 
 
 @mod_nest.route("/item/<string:item_mold>/<string:item_id>/edit", methods=['POST', 'GET'])
@@ -66,6 +70,9 @@ def item_form(mold, item, form, plugins, forward, item_mold, item_id=None):
 def item_edit(item_mold, item_id):
 	try:
 		mold = Mold(name=item_mold).get()
+	except DoesNotExist:
+		redirect_error('No mold "%s" exists.' % item_mold, url_for('nest.molds'))
+	try:
 		item = Item(id=item_id).get()
 		return item_form(
 			mold=mold,
@@ -82,10 +89,12 @@ def item_edit(item_mold, item_id):
 		    ],
 		    forward=url_for('nest.mold', item_mold=item_mold),
 		    item_mold=item_mold,
-		    item_id=item_id
+		    item_id=item_id,
+		    error=url_for('nest.item_edit', item_mold=item_mold, item_id=item_id),
+		    alert=Alert('%s updated.' % item_mold, class_='okay')
 		)
-	except DoesNotExist as e:
-		return render_error(str(e))
+	except DoesNotExist:
+		return redirect_error('No such item exists.', url_for('nest.mold', item_mold=item_mold))
 
 
 @mod_nest.route("/item/<string:item_mold>/add", methods=['GET', 'POST'])
@@ -93,6 +102,7 @@ def item_edit(item_mold, item_id):
 def item_add(item_mold):
 	try:
 		mold = Mold(name=item_mold).get()
+		item = Item()
 		return item_form(
 			mold=mold,
 			item=item,
@@ -107,10 +117,12 @@ def item_add(item_mold):
 				)
 			],
 		    forward=url_for('nest.mold', item_mold=item_mold),
-			item_mold=item_mold
+			item_mold=item_mold,
+		    error=url_for('nest.item_add', item_mold=item_mold),
+		    alert=Alert('%s added.' % item_mold, class_='okay')
 		)
-	except DoesNotExist as e:
-		return render_error(str(e))
+	except DoesNotExist:
+		return redirect_error('No mold "%s" exists.' % item_mold, url_for('nest.molds'))
 
 
 @mod_nest.route("/item/<string:item_mold>/<string:item_id>/delete")
@@ -118,9 +130,13 @@ def item_add(item_mold):
 def item_delete(item_mold, item_id):
 	try:
 		Item(id=item_id, mold=Mold(name=item_mold).get()).delete()
+		Alert('%s deleted.' % item_mold, class_='okay').log()
 		return redirect(url_for('nest.mold', item_mold=item_mold))
-	except DoesNotExist as e:
-		return render_error(str(e))
+	except ValidationError:
+		message = 'Invalid item ID.'
+	except (ValidationError, DoesNotExist):
+		message = 'No such item exists.'
+	return redirect_error(message, url_for('nest.mold', item_mold=item_mold))
 
 
 """

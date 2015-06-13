@@ -3,10 +3,10 @@ from flask import make_response, request, redirect, url_for
 
 from server import mod_nest
 from server.nest.libs import Nest
-from server.views import render, context, render_error
+from server.views import render, context, redirect_error
 from .forms import EditCodeForm, ImportCodeForm, UploadCodeForm
 from .libs import Template
-from server.auth.libs import File
+from server.auth.libs import File, Alert
 import json
 
 from mongoengine.errors import DoesNotExist, NotUniqueError
@@ -54,11 +54,12 @@ def code_import():
 	try:
 		if request.method == 'POST':
 			template = Template(path=form.path.data).load(html=form.html.data).import_html().save()
-			return redirect(url_for('nest.codes'))
+			Alert('File "%s" imported.' % form.path.data, class_='okay').log()
+			return redirect(url_for('nest.code', path='templates/'+form.path.data))
 		nest.load_plugin('code.import')
 		return render('nest.html', **context(**locals()))
 	except NotUniqueError as e:
-		return render_error(str(e))
+		return redirect_error(str(e))
 
 
 @mod_nest.route("/code/upload", methods=['POST', 'GET'])
@@ -72,9 +73,10 @@ def code_upload():
 			for file in request.files.values():
 				filename = file.filename.replace('../', '')
 				Template(path='public/%s' % filename).load(html=file.read()).import_html().save()
-				message += '\nFile "%s" uploaded successfully.' % filename
+				Alert('File "%s" uploaded.' % filename, class_='okay').log()
+				redirect(url_for('nest.codes'))
 		nest.load_plugin('code.upload')
 		return render('nest.html', **context(**locals()))
 	except NotUniqueError as e:
-		return render_error(str(e))
+		return redirect_error(str(e))
 		

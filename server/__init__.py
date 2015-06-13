@@ -47,3 +47,6 @@ Plugin.load_views()
 app.register_blueprint(mod_auth)
 app.register_blueprint(mod_nest)
 app.register_blueprint(mod_public)
+
+# add filters
+from server import filters

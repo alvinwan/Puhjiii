@@ -13,9 +13,9 @@ categories should be appended as querystrings.
 import markdown as mkd
 from html import unescape
 from flask_login import current_user
-from flask import render_template, render_template_string, make_response, Markup, redirect
+from flask import render_template, render_template_string, make_response, Markup, redirect, request
 from jinja2.exceptions import TemplatesNotFound, TemplateNotFound, UndefinedError
-from server.auth.libs import Allow
+from server.auth.libs import Allow, Alert
 
 
 def render(name, mod=None, repeats=0, markdown=True, **context):
@@ -31,6 +31,7 @@ def render(name, mod=None, repeats=0, markdown=True, **context):
 		for k, v in context.items():
 			if isinstance(v, str):
 				context[k] = Markup(mkd.markdown(v))
+	context['alert'] = Alert.check()
 	html = render_template(name, **context)
 	for i in range(repeats):
 		html = render_template_string(unescape(html), **context)
@@ -44,6 +45,20 @@ def render_error(message):
 	:return: response
 	"""
 	return render('error.html', message=message)
+
+
+def redirect_error(message, url=None, class_='notokay'):
+	"""
+	Returns user to a page and displays an alert there.
+	:param message: message
+	:param url: redirect url
+	:param class_: class for message
+	:return: redirect
+	"""
+	Alert(message, class_).log()
+	if not url:
+		url = request.path
+	return redirect(url)
 
 
 def filename(name, mod):
