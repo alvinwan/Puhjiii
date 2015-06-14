@@ -1,7 +1,7 @@
         <div class="nest-panel {{ panel }}">
             {% if alert %}
             <div class="banner {{ alert.class_ }}">
-                <p>{{ alert }}</p>
+                <p>{{ alert|markdown|safe }}</p>
             </div>
             {% endif %}
             <div class="nest-header">

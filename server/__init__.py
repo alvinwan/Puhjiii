@@ -9,7 +9,8 @@ from simplekv import KeyValueStore
 import config
 
 # Create and name app
-app = Flask(__name__)
+app = Flask(__name__, 
+            static_folder=config.STATIC_PATH)
 
 # database connection
 app.config['MONGODB_SETTINGS'] = {'DB': config.DB}

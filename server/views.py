@@ -31,6 +31,9 @@ def render(name, mod=None, repeats=0, markdown=True, **context):
 		for k, v in context.items():
 			if isinstance(v, str):
 				context[k] = Markup(mkd.markdown(v))
+			# if k == 'form':
+			# 	for e, a in getattr(alert.kwargs, 'form', {}).items():
+			# 		getattr(v, e).data = a
 	context['alert'] = Alert.check()
 	html = render_template(name, **context)
 	for i in range(repeats):

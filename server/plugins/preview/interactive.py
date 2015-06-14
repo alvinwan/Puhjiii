@@ -9,6 +9,7 @@ of files:
 
 """
 # TODO: make flow easier to follow, abstract relevant parts into libs.py?
+from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 import json
 from server.plugins.mold.libs import Mold
@@ -17,7 +18,7 @@ from server.plugins.page.libs import Page
 from server.plugins.item.libs import Item
 from server.plugins.code.libs import Template
 from server.auth.libs import File
-from flask import render_template
+from flask import render_template, url_for
 from flask_login import current_user
 import re
 
@@ -28,7 +29,7 @@ from mongoengine.errors import DoesNotExist
 
 
 def process(data):
-	context = basic.process(data)
+	context = iedit(data)
 	action, path = data.action, context.get('path')
 	if path:
 		try:
@@ -44,6 +45,13 @@ def process(data):
 	locals().update(context)
 	return locals()
 
+
+def iedit(data):
+	context = basic.process(data)
+	parts = urlparse(context['src'])
+	path = parts.path if parts.path != '/' else ''
+	context['src'] = url_for('nest.iedit', path=path)
+	return context
 
 whitespace = re.compile('>\s+<')
 
@@ -69,7 +77,7 @@ def postprocess(html, template, host, partials='{"partials":[]}', molds='{"molds
 	molds = unjsonify(molds, {'molds': []})['molds']
 	data, molds, templates = parse_html(
 		File.read('templates/'+template.path), 
-		html, partials, molds, template_path=template.path)
+		html, partials, molds, template_path=template.path, template_obj=template)
 	if templates:
 		first = templates[0]
 		process_templates(templates)
@@ -122,7 +130,7 @@ def process_items(molds):
 			Item(mold=mold, author=current_user, info=item).save()
 
 
-def parse_html(template, html, partials=[], molds=[], template_path=''):
+def parse_html(template, html, partials=[], molds=[], template_path='', template_obj=None):
 	"""
 	At save, the source is processed:
 	+ Using the original template, regex match for all groups
@@ -139,7 +147,7 @@ def parse_html(template, html, partials=[], molds=[], template_path=''):
 	if is_new:
 		return None, molds, partials
 	else:
-		return extract_data(regex, html) or {}, molds, None
+		return extract_data(regex, html, template_obj) or {}, molds, None
 
 
 def is_very_diff(original, new, regex, partials, molds):
@@ -155,7 +163,7 @@ def is_very_diff(original, new, regex, partials, molds):
 	return len(partials) > 0 or len(molds) > 0
 
 
-def extract_data(regex, html):
+def extract_data(regex, html, template):
 	"""
 	Return dictionary of key, value pairs from regex and source
 	:param regex: matching
@@ -163,7 +171,7 @@ def extract_data(regex, html):
 	:return: dictionary of data
 	"""
 	groups = regex.match(html)
-	return groups.groupdict() if groups else {}
+	return groups.groupdict() if groups else template.defaults
 	
 	
 def extract_partials(html, partials, template_path):

@@ -1,3 +1,4 @@
+from shutil import Error
 from flask_login import login_required, current_user
 from flask import make_response, request, redirect, url_for
 
@@ -43,6 +44,8 @@ def code(path='templates/public/index.html'):
 		pass
 	except UnicodeDecodeError:
 		pass
+	except FileNotFoundError:
+		return redirect_error('No such path "%s" found.' % path, url_for('nest.code'))
 	return render('nest.html', **context(**locals()))
 
 
@@ -52,9 +55,9 @@ def code_import():
 	form = ImportCodeForm(request.form)
 	nest = Nest(current_user, request)
 	try:
-		if request.method == 'POST':
-			template = Template(path=form.path.data).load(html=form.html.data).import_html().save()
-			Alert('File "%s" imported.' % form.path.data, class_='okay').log()
+		if request.method == 'POST' and form.validate():
+			template = Template(path=form.path.data).import_html(form.html.data).save()
+			Alert('File "%s" imported. [View code](%s).' % form.path.data, class_='okay').log()
 			return redirect(url_for('nest.code', path='templates/'+form.path.data))
 		nest.load_plugin('code.import')
 		return render('nest.html', **context(**locals()))
@@ -68,15 +71,17 @@ def code_upload():
 	form = UploadCodeForm(request.form)
 	nest = Nest(current_user, request)
 	try:
-		if request.method == 'POST':
-			message = ''
+		if request.method == 'POST' and form.validate():
 			for file in request.files.values():
-				filename = file.filename.replace('../', '')
-				Template(path='public/%s' % filename).load(html=file.read()).import_html().save()
-				Alert('File "%s" uploaded.' % filename, class_='okay').log()
-				redirect(url_for('nest.codes'))
+				Template().upload(file, form.destination.data).save()
+				Alert('File "%s" uploaded.' % file.filename, class_='okay').log()
+				return redirect(url_for('nest.codes'))
 		nest.load_plugin('code.upload')
 		return render('nest.html', **context(**locals()))
-	except NotUniqueError as e:
-		return redirect_error(str(e))
-		
+	except (NotUniqueError, Error) as e:
+		message = str(e)
+	except IsADirectoryError:
+		message = 'Cannot upload directories, sorry. :('
+	except FileNotFoundError as e:
+		return redirect_error(str(e), url_for('nest.code'))
+	return redirect_error(message)

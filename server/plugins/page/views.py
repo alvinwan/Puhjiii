@@ -14,6 +14,7 @@ from mongoengine.errors import NotUniqueError, DoesNotExist
 
 
 @mod_nest.route("/pages")
+@mod_nest.route("/page/")
 @mod_nest.route("/page/<path:url>")
 @login_required
 def pages(url=''):
@@ -23,7 +24,7 @@ def pages(url=''):
 	return render('nest.html', **context(nest))
 
 
-def page_form(page, form, plugins, error, alert, url=''):
+def page_form(page, form, plugins, error, alert):
 	nest = Nest(current_user, request)
 	try:
 		nest.load_plugins(*plugins)
@@ -36,15 +37,17 @@ def page_form(page, form, plugins, error, alert, url=''):
 			     url=form.url.data,
 			     info=template.defaults).save()
 			alert.log()
-			return redirect(url_for('nest.page_edit', url=form.url.data))
+			return redirect(url_for('nest.page_edit', id=page.id))
+		if form.errors:
+			Alert(form.error()).log()
 		return render('nest.html', **context(**locals()))
 	except (TemplateNotFound, FileNotFoundError) as e:
 		message = 'No such template exists: '+str(e)
 	except NotUniqueError:
-		message = 'URL already taken by another page.'
+		message = 'URL and/or title already taken by another page.'
 	except DoesNotExist as e:
-		Template(path="public/"+form.template.data).import_path().save()
-		return page_form(page, form, plugins, url, alert)
+		Template().import_path(path="public/"+form.template.data).save()
+		return page_form(page, form, plugins, error, alert)
 	return redirect_error(message, error)
 
 
@@ -62,37 +65,36 @@ def page_add():
 				{'path': '', 'request': request})])
 
 
-@mod_nest.route("/page/edit/<path:url>", methods=['GET', 'POST'])
+@mod_nest.route("/page/edit/<string:id>", methods=['GET', 'POST'])
 @login_required
-def page_edit(url):
+def page_edit(id):
 	try:
-		page = Page(url=url).get()
+		page = Page(id=id).get()
 		page.template = page.template.replace('public/', '')
 		return page_form(
 			page=page,
 			form=EditPageForm(request.form, page),
-		    error=url_for('nest.page_edit', url=url),
-		    alert=Alert('Page %s updated.' % url, class_='okay'),
+		    error=url_for('nest.page_edit', id=id),
+		    alert=Alert('Page %s updated.' % page.url, class_='okay'),
 		    plugins=[
 			    ('page.edit', {}),
 			    ('preview.interactive',
 			        {
-			            'path': url,
+			            'path': page.url,
 			            'request': request,
-			            'action': url_for('nest.page_iedit', url=url)
+			            'action': url_for('nest.page_iedit', id=id)
 			        }
 			    )
-		    ],
-			url=url)
+		    ])
 	except DoesNotExist as e:
 		return redirect_error(str(e), url_for('nest.pages'))
 
 
-@mod_nest.route("/page/iedit/<path:url>", methods=['POST'])
+@mod_nest.route("/page/iedit/<string:id>", methods=['POST'])
 @login_required
-def page_iedit(url):
+def page_iedit(id):
 	try:
-		page = Page(url=url).get()
+		page = Page(id=id).get()
 		template = Template(path=page.template).get()
 		postprocess(
 			html=request.form['html'], 
@@ -100,17 +102,17 @@ def page_iedit(url):
 			host=page,
 			partials=request.form['partials'],
 			molds=request.form['molds'])
-		return redirect(url_for('nest.page_edit', url=url))
+		return redirect(url_for('nest.page_edit', id=id))
 	except DoesNotExist as e:
 		return redirect_error(str(e), url_for('nest.pages'))
 
 
-@mod_nest.route("/page/delete/<path:url>")
+@mod_nest.route("/page/delete/<string:id>")
 @login_required
-def page_delete(url):
+def page_delete(id):
 	try:
-		Page(url=url).delete()
-		Alert('Paged %s deleted' % url, class_='okay').log()
+		Page(id=id).delete()
+		Alert('Paged %s deleted' % page.url, class_='okay').log()
 		return redirect(url_for('nest.pages'))
 	except DoesNotExist:
 		return redirect_error('No such page exists.', url_for('nest.pages'))

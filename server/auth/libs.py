@@ -2,7 +2,7 @@ from server.libs import Puhjiii
 from . import models
 import config
 from os.path import join, isdir
-from os import listdir
+from os import listdir, walk
 
 from flask_login import UserMixin
 from server import store
@@ -81,6 +81,21 @@ class File:
 	"""
 	
 	@staticmethod
+	def join(*args):
+		"""
+		Joins all specified paths together
+		:param args: paths
+		:return: combined path
+		"""
+		return join(*args)
+	
+	@staticmethod
+	def rel(rel, *args):
+		original = File.join(*args)
+		base = File.abs(rel) + '/'
+		return original.replace(base, '')
+	
+	@staticmethod
 	def abs(path='', prefix=''):
 		"""
 		Returns an absolute path using a path relative to server/
@@ -110,19 +125,30 @@ class File:
 		return open(File.abs(path), 'w').write(content)
 	
 	@staticmethod
-	def s(path):
+	def s(path, recursive=False):
 		"""
 		List all files in the specified directory.
 		:param path: relative path
 		:return: list
 		"""
 		base = File.abs(path)
-		return [f for f in listdir(base) if not isdir(join(base, f))]
+		if isdir(base):
+			if recursive:
+				matches = []
+				for root, dirnames, filenames in walk(base):
+					for filename in filenames:
+						if filename.endswith('.html'):
+							matches.append(File.rel('templates/public', root, filename))
+				return matches
+			else:
+				return [f for f in listdir(base) if not isdir(join(base, f))]
+		else:
+			return [path]
 	
 	
 class Alert:
 	
-	def __init__(self, message, class_='notokay'):
+	def __init__(self, message, class_='notokay', **kwargs):
 		self.message = message
 		self.class_ = class_
 		

@@ -30,6 +30,8 @@ def markdown(value):
 	:param value: actual content
 	:return: markdown converted form
 	"""
+	if not isinstance(value, str):
+		value = str(value)
 	return md.convert(value)
 
 app.jinja_env.filters['timedelta'] = timedelta

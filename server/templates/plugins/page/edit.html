@@ -1,6 +1,6 @@
 {% extends "nest/puhjiii.form.html" %}
 {% block path %}<a href="{{ url_for('nest.pages') }}">Pages</a> / <span class="nest-path-curr">Pages</span>{% endblock %}
 {% set cancel = url_for('nest.pages') %}
-{% set action = url_for('nest.page_edit', url=url) %}
+{% set action = url_for('nest.page_edit', id=page.id) %}
 {% set submit = "Save" %}
 {% set title = "Edit Page" %}

@@ -5,14 +5,7 @@
 <a href="{{ url_for('nest.home') }}">main</a>
 {% block form %}
 <form class="form-content" action="{{ url_for('nest.code_upload') }}" method="post" enctype="multipart/form-data">
-    <div>
-        <label>Select Files</label>
-        {{ form.files_info|markdown|safe }}
-        {{ form.files(multiple='') }}
-    </div>
-    {% if message %}
-    {{ message }}
-    {% endif %}
+    {% include "nest/partials/form.html" %}
     <input class="button" type="submit" value="Upload">
 </form>
 {% endblock %}

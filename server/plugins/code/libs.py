@@ -1,3 +1,6 @@
+from os import mkdir, makedirs
+from os.path import isdir, exists
+from shutil import rmtree, copytree, ignore_patterns
 from server.libs import Puhjiii
 from . import models
 
@@ -7,6 +10,8 @@ from loremipsum import get_sentence
 import re
 import string
 import random
+from werkzeug.utils import secure_filename
+from zipfile import ZipFile, is_zipfile
 
 
 class Template(Puhjiii):
@@ -15,7 +20,8 @@ class Template(Puhjiii):
 	i = 0
 
 	def __init__(self, **kwargs):
-		self.html = self.path = None
+		self.path = None
+		self.defaults = {}
 		super().__init__(**kwargs)
 
 	@staticmethod
@@ -95,24 +101,89 @@ class Template(Puhjiii):
 		File.write('templates/'+path, str(soup))
 		return soup, fields
 
-	def import_html(self):
+	def import_html(self, html, path=None):
 		"""
 		Imports the current source or template, by generating and saving
 		a new template. Then, it saves this template instance with default
 		data.
 		:return: self
 		"""
-		soup, self.defaults = self.import_template(self.html, self.path)
-		self.save()
+		if path:
+			self.path = path
+		soup, self.defaults = self.import_template(html, self.path)
 		return self
-	
-	def import_path(self):
+
+	def import_path(self, path):
 		"""
 		Imports from the specified path.
 		:return: self
 		"""
-		self.html = File.read('templates/'+self.path)
-		return self.import_html()
+		html = File.read('templates/'+path)
+		return self.import_html(html, path)
+	
+	def upload(self, file, path=None, override=True):
+		"""
+		Upload the given target.
+		:return:
+		"""
+		file.filename = secure_filename(file.filename)
+		if is_zipfile(file):
+			self.upload_zip(file, path, override)
+		else:
+			self.upload_file(file, path, override)
+		return self
+
+	def upload_file(self, file, path=None, override=True):
+		"""
+		Upload the given file.
+		:param file:
+		:param path:
+		:return:
+		"""
+		self.import_html(file.read(), path+file.filename)
+		return self
+	
+	def upload_zip(self, file, path=None, override=True):
+		"""
+		Upload the zip in three steps:
+		1. Extract all files in zipname/ directory.
+		2. Move all directories in zipname/ to /static/public/zipname/
+		3. Update all links in the files left.
+		:param file: 
+		:param path: 
+		:return:
+		"""
+		zip = ZipFile(file)
+		path = path or File.join('public', file.filename.replace('.zip', ''))
+		rel_src = File.join('templates', path)
+		rel_dst = File.join('static', path)
+		src = File.abs(path, 'templates')
+		dst = File.abs(path, 'static')
+		
+		if not exists(dst):
+			makedirs(dst)
+		
+		moved = []
+		for info in zip.infolist():
+			name, file = info.filename, File.join(src, info.filename)
+			if not name.endswith('.html'):
+				zip.extract(info.filename, dst)
+				moved.append(info.filename)
+			else:
+				zip.extract(info.filename, src)
+				path = '/'.join(File.join(rel_src, info.filename).split('/')[1:])
+				Template().import_path(path).filter(path=path).save()
+
+		for filename in File.s(File.join('templates', path)):
+			html = File.read(filename)
+			for dir in moved:
+				find, repl = dir, '/' + File.join(rel_dst, dir)
+				html = html.replace("'"+find, "'"+repl)
+				html = html.replace('"'+find, '"'+repl)
+			File.write(filename, html)
+			
+		zip.close()
+		return self
 
 	def generate_defaults(self):
 		"""

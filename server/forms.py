@@ -1,4 +1,13 @@
-from wtforms import Form, fields as wtf
+from wtforms import Form as WTForm, fields as wtf
+
+
+class Form(WTForm):
+	"""
+	Wrapper for default Form class
+	"""
+	
+	def error(self):
+		return '\n'.join([f+': '+', '.join(e) for f, e in self.errors.items()])
 
 
 class DynamicForm(Form):

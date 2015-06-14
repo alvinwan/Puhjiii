@@ -18,6 +18,7 @@ DEBUG = get('DEBUG', True)
 # define application directory
 import os
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+STATIC_PATH = 'static'
 
 # conditional log_level printing
 LOG_LEVEL = 0

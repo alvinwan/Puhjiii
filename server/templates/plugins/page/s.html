@@ -13,13 +13,17 @@
             <ul>
                 {% for page in pages %}
                 <li>
+                    {% if page.url == '/' %}
+                    <a href="{{ url_for('nest.pages') }}">
+                    {% else %}
                     <a href="{{ url_for('nest.pages', url=page.url) }}">
+                    {% endif %}
                         <i class="fa fa-file-o"></i>
                         {{page.title}}
-                        <span class="page-url">/{{page.url}}</span>
+                        <span class="page-url">{{page.url}}</span>
                     </a>
-                    <a class="edit option" href="{{ url_for('nest.page_edit', url=page.url) }}"><i class="fa fa-gear"></i>Edit</a>
-                    <a class="trash" href="{{ url_for('nest.page_delete', url=page.url) }}"><i class="fa fa-trash-o"></i></a>
+                    <a class="edit option" href="{{ url_for('nest.page_edit', id=page.id) }}"><i class="fa fa-gear"></i>Edit</a>
+                    <a class="trash" href="{{ url_for('nest.page_delete', id=page.id) }}"><i class="fa fa-trash-o"></i></a>
                 </li>
                 {% endfor %}
             </ul>

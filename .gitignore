@@ -8,3 +8,7 @@ __pycache__/
 # IDE
 *.iml
 .idea/
+
+# (temporarily) ignore templates
+server/templates/public/Archive
+static/public

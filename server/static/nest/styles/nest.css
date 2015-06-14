@@ -59,6 +59,9 @@ html, body {
 		.nest-path a {
 			border-bottom:1px dotted #999;
 		}
+		.nest-path a:hover {
+			border-bottom:1px solid #FFF;
+		}
 	.nest-path-curr {
 		color:#333;
 	}
@@ -413,6 +416,9 @@ html, body {
 			.nest-bar a.button {
 				opacity:0.5;
 			}
+		.iedit iframe {
+			padding-bottom:7.85em;
+		}
 /* -- counter unwanted prism styles -- */
 html .editor pre {
 	margin: 0;
