@@ -6,7 +6,7 @@ Puhjiii was designed to make developers' lives easier; drag-and-drop in HTML sta
 
 With simple customizations -- doable by both developers and clients -- the website can also be transformed into a fully-fledged blogging platform. Common elements across pages can be synchronized, and with a few more plugins, clients can add comments, statistics and more.
 
-Now, Puhjiii is a ightweight CMS. Truth be told, it's not built to be extensive and all-encompassing. On the same note, dragging-and-dropping files to make a deployable CMS is pretty exciting.
+Now, Puhjiii is a lightweight CMS. Truth be told, it's not built to be extensive and all-encompassing. On the same note, dragging-and-dropping files to make a deployable CMS is pretty exciting.
 
 ##Installation
 1. Clone this repository.
@@ -45,3 +45,6 @@ Website Management
 + login and register users
 + install plugins to enhance functionality
 
+##More
+
+For more information, see the official Puhjiii website at [braiiin.com/puhjiii](http://braiiin.com/puhjiii), and here is the [chubby bird](http://drbl.in/oRxN) that started it all.
