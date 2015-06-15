@@ -49,8 +49,7 @@ def process(data):
 def iedit(data):
 	context = basic.process(data)
 	parts = urlparse(context['src'])
-	path = parts.path if parts.path != '/' else ''
-	context['src'] = url_for('nest.iedit', path=path)
+	context['src'] = url_for('nest.iedit', path=parts.path[1:])
 	return context
 
 whitespace = re.compile('>\s+<')
@@ -88,7 +87,7 @@ def postprocess(html, template, host, partials='{"partials":[]}', molds='{"molds
 		process_items(molds)
 	host.save()
 	return data
-		
+
 	
 def regex_ready_html(html):
 	"""
@@ -99,11 +98,12 @@ def regex_ready_html(html):
 	:param html: the source to edit
 	:return: html
 	"""
+	chars = ['?']
 	validtag = re.compile('{{\s?(?P<tag>[A-z0-9_]+)\s?}}')
-	return validtag.sub(
-		'(?P<\g<tag>>[\S\s]+)', 
-		html.replace('\n', '\s{0,}')
-	).replace('/', '\/')
+	html = whitespace.sub('[\s\S]{0,}>\s{0,}<', html)
+	for char in chars:
+		html = html.replace(char, '\\%s' % char)
+	return validtag.sub('(?P<\g<tag>>[\S\s]+)', html).replace('/', '\/')
 
 
 def process_templates(templates):
@@ -171,7 +171,8 @@ def extract_data(regex, html, template):
 	:return: dictionary of data
 	"""
 	groups = regex.match(html)
-	return groups.groupdict() if groups else template.defaults
+	return groups.groupdict() if groups else \
+		({} or getattr(template, 'defaults', None))
 	
 	
 def extract_partials(html, partials, template_path):

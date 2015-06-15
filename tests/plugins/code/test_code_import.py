@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from server.plugins.code.libs import Template
+from server.auth.libs import File
 
 
 def test_parse_basic():
@@ -70,3 +71,26 @@ def test_replace_only_constants():
 	assert 'item.copy' not in fields.keys()
 	assert soup.html.q.string == '{{ legit_copy }}'
 	assert fields['legit_copy'] == ''
+
+
+def test_actual_file_parse():
+	html = File.read('../tests/plugins/seed/publications.body.html')
+	soup, fields = Template.to_fields(BeautifulSoup(html), prefix=False)
+
+	values = ['Publications', 'coming soon', 'search', 'publications',
+	          'software', 'calendar', 'apply', 'about', 'The Lab']
+	texts = fields.values()
+	for value in values:
+		assert value in texts
+
+
+def test_actual_file_parse_full():
+	html = File.read('../tests/plugins/seed/publications.html')
+	soup, fields = Template.to_fields(BeautifulSoup(html), prefix=False)
+
+	values = ['Publications', 'coming soon', 'search', 'publications',
+	          'software', 'calendar', 'apply', 'about', 'The Lab Publications',
+	          'The Lab']
+	texts = fields.values()
+	for value in values:
+		assert value in texts

@@ -1,3 +1,4 @@
+from server.auth.libs import File
 from server.plugins.preview.interactive import parse_html, regex_ready_html
 import json
 import re
@@ -51,3 +52,94 @@ def test_page_process_molds():
 	item1 = mold[1].values()
 	assert 'No World' in item1
 	assert 'It so funny.' in item1
+
+
+def test_page_process_double_quotations():
+	template = '<h2 class="yo">{{ title }}</h2><p>{{ copy }}</p>'
+	final = '<h2 class="yo">Title YO</h2><p>This is some great copy.</p>'
+	data, repeatables, templates = parse_html(template=template, html=final)
+	assert data['title'] == 'Title YO'
+	assert data['copy'] == 'This is some great copy.'
+	
+
+def test_page_process_single_quotations():
+	template = '<h2 class=\'yo\'>{{ title }}</h2><p>{{ copy }}</p>'
+	final = '<h2 class=\'yo\'>Title YO</h2><p>This is some great copy.</p>'
+	data, repeatables, templates = parse_html(template=template, html=final)
+	assert data['title'] == 'Title YO'
+	assert data['copy'] == 'This is some great copy.'
+	
+
+def test_page_process_link():
+	extra = "<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,500' rel='stylesheet' type='text/css'>"
+	template = '<h2>{{ title }}</h2><p>{{ copy }}</p>' + extra
+	final = '<h2>Title YO</h2><p>This is some great copy.</p>' + extra
+	data, repeatables, templates = parse_html(template=template, html=final)
+	assert data['title'] == 'Title YO'
+	assert data['copy'] == 'This is some great copy.'
+
+
+def test_page_process_specialchars():
+	template = '<h2>{{ title }}</h2><p>{{ copy }}</p>'
+	final = '<h2>Title YO</h2><p>This is some great copy.&lt;nav style=&#34;display:none&#34;&gt;&lt;/nav&gt;</p>'
+	data, repeatables, templates = parse_html(template=template, html=final)
+	assert data['title'] == 'Title YO'
+	assert data['copy'] == 'This is some great copy.&lt;nav style=&#34;display:none&#34;&gt;&lt;/nav&gt;'
+
+
+def test_page_process_period_spaces():
+	template = '<p class="footer-byline"><a href="about.html">{{ YIZi11 }}</a>{{ YIZi12 }}<a href="application.html">{{ YIZi13 }}</a>'
+	final = '<p class="footer-byline"><a href="about.html">about</a> . <a href="application.html">apply</a>'
+	data, repeatables, templates = parse_html(template=template, html=final)
+	
+	values = ['about', ' . ', 'apply']
+	texts = data.values()
+	for value in values:
+		assert value in texts
+
+
+def test_page_process_spaces():
+	template = '<p class="footer-byline"><a href="about.html">{{ YIZi11 }}</a>{{ YIZi12 }}<a href="application.html">{{ YIZi13 }}</a>'
+	final = '<p class="footer-byline"><a href="about.html">about</a> . <a href="application.html">apply</a>'
+	data, repeatables, templates = parse_html(template=template, html=final)
+
+	values = ['about', ' . ', 'apply']
+	texts = data.values()
+	for value in values:
+		assert value in texts
+
+
+def test_page_process_real_element():
+	template = File.read('../tests/plugins/seed/publications.template.body.html')
+	final = File.read('../tests/plugins/seed/publications.body.html')
+	data, repeatables, templates = parse_html(template=template, html=final)
+
+	values = ['publications', 'software', 'calendar', 'apply', 'about', 'The Lab']
+	texts = data.values()
+	for value in values:
+		assert value in texts
+
+
+def test_page_process_real_body():
+	template = File.read('../tests/plugins/seed/publications.template.body.html')
+	final = File.read('../tests/plugins/seed/publications.body.html')
+	data, repeatables, templates = parse_html(template=template, html=final)
+
+	values = ['Publications', 'coming soon', 'search', 'publications', 
+	          'software', 'calendar', 'apply', 'about', 'The Lab']
+	texts = data.values()
+	for value in values:
+		assert value in texts
+
+
+def test_page_process_real_file():
+	template = File.read('../tests/plugins/seed/publications.template.html')
+	final = File.read('../tests/plugins/seed/publications.html')
+	data, repeatables, templates = parse_html(template=template, html=final)
+
+	values = ['Publications', 'coming soon', 'search', 'publications', 
+	          'software', 'calendar', 'apply', 'about', 'The Lab Publications', 
+	          'The Lab']
+	texts = data.values()
+	for value in values:
+		assert value in texts

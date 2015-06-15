@@ -1,6 +1,5 @@
-from os import mkdir, makedirs
-from os.path import isdir, exists
-from shutil import rmtree, copytree, ignore_patterns
+from os import makedirs
+from os.path import exists
 from server.libs import Puhjiii
 from . import models
 
@@ -14,15 +13,44 @@ from werkzeug.utils import secure_filename
 from zipfile import ZipFile, is_zipfile
 
 
+extraneous = re.compile('[\s\S]{0,}<html>([\s\S]+)</html>[\s\S]{0,}')
+
+
 class Template(Puhjiii):
 	
 	model = models.Template
 	i = 0
+	tags = {}
 
 	def __init__(self, **kwargs):
 		self.path = None
 		self.defaults = {}
 		super().__init__(**kwargs)
+
+	@staticmethod
+	def soupify(html):
+		"""
+		Soupify HTML, but removed extraneous code from outside of 
+		HTML tags.
+		:param html: html
+		:return: soup
+		"""
+		return BeautifulSoup(html.strip())
+
+	@staticmethod
+	def stringify(soup):
+		"""
+		Convert soup back to HTML
+		:param soup: soup
+		:return: html
+		"""
+		tags, string = ['link', 'img'], str(soup)
+		for tag in tags:
+			string = string.replace('</%s>' % tag, '')
+			if tag not in Template.tags.keys():
+				Template.tags[tag] = re.compile('(<%s[\s\S]{0,}?)/>' % tag)
+			string = Template.tags[tag].sub('\g<1>>', string)
+		return extraneous.sub('<html>\g<1></html>', string)
 
 	@staticmethod
 	def to_template(path):
@@ -33,7 +61,7 @@ class Template(Puhjiii):
 		:return: fields
 		"""
 		html = File.open(path)
-		soup, fields = Template.to_fields(BeautifulSoup(html))
+		soup, fields = Template.to_fields(Template.soupify(html))
 		return soup, fields
 
 
@@ -97,8 +125,8 @@ class Template(Puhjiii):
 		:param path: path to save in
 		:return: 
 		"""
-		soup, fields = Template.to_defaults(BeautifulSoup(html))
-		File.write('templates/'+path, str(soup))
+		soup, fields = Template.to_defaults(Template.soupify(html))
+		File.write('templates/'+path, Template.stringify(soup))
 		return soup, fields
 
 	def import_html(self, html, path=None):
@@ -171,16 +199,17 @@ class Template(Puhjiii):
 				moved.append(info.filename)
 			else:
 				zip.extract(info.filename, src)
-				path = '/'.join(File.join(rel_src, info.filename).split('/')[1:])
-				Template().import_path(path).filter(path=path).save()
+				file_path = '/'.join(File.join(rel_src, info.filename).split('/')[1:])
+				Template().import_path(file_path).filter(path=file_path).save()
 
 		for filename in File.s(File.join('templates', path)):
-			html = File.read(filename)
+			filepath = File.join('templates', path, filename)
+			html = File.read(filepath)
 			for dir in moved:
 				find, repl = dir, '/' + File.join(rel_dst, dir)
 				html = html.replace("'"+find, "'"+repl)
 				html = html.replace('"'+find, '"'+repl)
-			File.write(filename, html)
+			File.write(filepath, html)
 			
 		zip.close()
 		return self
@@ -192,6 +221,6 @@ class Template(Puhjiii):
 		:return:
 		"""
 		html = File.read(self.path)
-		soup, fields = self.to_defaults(BeautifulSoup(html))
+		soup, fields = self.to_defaults(Template.soupify(html))
 		self.defaults = fields
 		return self

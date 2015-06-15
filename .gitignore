@@ -11,4 +11,4 @@ __pycache__/
 
 # (temporarily) ignore templates
 server/templates/public/Archive
-static/public
+server/static/public
