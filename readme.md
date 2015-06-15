@@ -1,12 +1,12 @@
-#Puhjee
-Puhjee is a lightweight content management system. Get it setup on your local system and even for production use in just a matter of seconds.
+#Puhjiii
+Puhjiii is a lightweight content management system. Get it setup on your local system and even for production use in just a matter of seconds.
 
-##Why Puhjee?
-Puhjee was designed to make developers' lives easier; drag-and-drop in HTML statics, and Puhjee will automatically allow users to customize content through a UI. In this way, clients can edit the page's content without touching a single line of code. Even better, developers can port statics into a CMS, without touching a single line of code.
+##Why Puhjiii?
+Puhjiii was designed to make developers' lives easier; drag-and-drop in HTML statics, and Puhjiii will automatically allow users to customize content through a UI. In this way, clients can edit the page's content without touching a single line of code. Even better, developers can port statics into a CMS, without touching a single line of code.
 
 With simple customizations -- doable by both developers and clients -- the website can also be transformed into a fully-fledged blogging platform. Common elements across pages can be synchronized, and with a few more plugins, clients can add comments, statistics and more.
 
-Now, Puhjee is an *extremely* lightweight CMS. Truth be told, it's not built to be extensive and all-encompassing. On the same note, dragging-and-dropping files to make a deployable CMS is pretty exciting.
+Now, Puhjiii is a ightweight CMS. Truth be told, it's not built to be extensive and all-encompassing. On the same note, dragging-and-dropping files to make a deployable CMS is pretty exciting.
 
 ##Installation
 1. Clone this repository.
@@ -19,7 +19,14 @@ Now, Puhjee is an *extremely* lightweight CMS. Truth be told, it's not built to 
 
 > To ensure that the system works as promised, run tests using `env/bin/py.test tests`.
 
-##Puhjee Features
+##Getting Started
+1. Click "Tell me about you."
+2. Fill out your desired administrator account information.
+3. Complete information about your database; leave empty for defaults.
+4. Click "Launch".
+5. Setup is complete.
+
+##Puhjiii Features
 Here are existing features, packed into this tiny program:
 
 Editing Webpages
@@ -32,6 +39,9 @@ Editing Webpages
 - copy-and-paste or delete elements
 
 Website Management
-+ add pages and additional users, based on existing or new templates
++ add a new "mold" for a new type of content (e.g., "mold" for all posts)
++ add a specific item for a "mold" (e.g., a post)
++ add pages based on existing or new templates with a custom URL
 + login and register users
 + install plugins to enhance functionality
+
