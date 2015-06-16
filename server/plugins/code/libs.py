@@ -44,7 +44,7 @@ class Template(Puhjiii):
 		:param soup: soup
 		:return: html
 		"""
-		tags, string = ['link', 'img'], str(soup)
+		tags, string = ['link', 'img', 'input'], str(soup)
 		for tag in tags:
 			string = string.replace('</%s>' % tag, '')
 			if tag not in Template.tags.keys():

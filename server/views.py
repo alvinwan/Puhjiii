@@ -9,6 +9,7 @@ All routes should follow the following structure:
 Additional data that does not fall into those three
 categories should be appended as querystrings.
 """
+import datetime
 
 import markdown as mkd
 from html import unescape
@@ -16,6 +17,7 @@ from flask_login import current_user
 from flask import render_template, render_template_string, make_response, Markup, redirect, request
 from jinja2.exceptions import TemplatesNotFound, TemplateNotFound, UndefinedError
 from server.auth.libs import Allow, Alert
+from urllib.parse import urlparse
 
 
 def render(name, mod=None, repeats=0, markdown=True, **context):
@@ -124,3 +126,9 @@ def context(nest, **kwargs):
 	}
 	data.update(nest.context, **kwargs)
 	return data
+
+
+def break_cache(url):
+	parts = urlparse(url)
+	append = '?' if len(parts.query) == 0 else '&'
+	return url+append+'cache_break='+str(datetime.datetime.now())

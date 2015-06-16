@@ -40,7 +40,9 @@ def page_form(page, form, plugins, error, alert):
 			return redirect(url_for('nest.page_edit', id=page.id))
 		if form.errors:
 			Alert(form.error()).log()
-		return render('nest.html', **context(**locals()))
+		response = render('nest.html', **context(**locals()))
+		response.headers.add('X-XSS-Protection', 0)
+		return response
 	except (TemplateNotFound, FileNotFoundError) as e:
 		message = 'No such template exists: '+str(e)
 	except NotUniqueError:

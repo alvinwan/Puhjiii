@@ -98,12 +98,12 @@ def regex_ready_html(html):
 	:param html: the source to edit
 	:return: html
 	"""
-	chars = ['?']
+	chars = ['?', '[', '(']
 	validtag = re.compile('{{\s?(?P<tag>[A-z0-9_]+)\s?}}')
-	html = whitespace.sub('[\s\S]{0,}>\s{0,}<', html)
 	for char in chars:
 		html = html.replace(char, '\\%s' % char)
-	return validtag.sub('(?P<\g<tag>>[\S\s]+)', html).replace('/', '\/')
+	html = whitespace.sub('[\s\S]{0,}?>\s{0,}<', html)
+	return validtag.sub('(?P<\g<tag>>[\S\s]+?)', html).replace('/', '\/').replace('\n', '')
 
 
 def process_templates(templates):

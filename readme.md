@@ -48,3 +48,23 @@ Website Management
 ##More
 
 For more information, see the official Puhjiii website at [braiiin.com/puhjiii](http://braiiin.com/puhjiii), and here is the [chubby bird](http://drbl.in/oRxN) that started it all.
+
+##Developers
+
+*Plugin Development*
+Each plugin is composed of the following:
+
+```
+plugins/
+    __init__.py : plugin description, adopted directory name, list of all requirements
+    forms.py : all forms, using WTForms
+    libs.py : all classes needed for plugin functionality
+    models.py : all models, using MongoEngine
+    views.py : all views, using Flask and Werkzeug
+    [component].py : generates context for a specific Nest panel
+    
+templates/
+    [component].html : template for Nest panel
+```
+
+Plugins may add views to one of three Blueprints: public, nest, or auth.

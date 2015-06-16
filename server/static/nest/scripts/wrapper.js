@@ -3,7 +3,9 @@ $(document).ready(function() {
     original = $('#html').val();
 
     function iframe() {
-        return $('iframe').contents().find('html');
+        content = $('iframe').contents();
+        content.find('*').blur();
+        return content.find('html');
     }
 
     function html() {
@@ -18,10 +20,9 @@ $(document).ready(function() {
     }
     
     function strip() {
-        var contents = ['style']
+        var contents = ['style', 'link', 'script']
         
         for (var i = 0;i<contents.length;i++) {
-            console.log(contents[i]);
             iframe().find(contents[i]).each(function() {
                 substr = htmlify($(this));
                 if (original.indexOf(substr) <= -1) {
