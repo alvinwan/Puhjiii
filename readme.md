@@ -9,22 +9,34 @@ With simple customizations -- doable by both developers and clients -- the websi
 Now, Puhjiii is a lightweight CMS. Truth be told, it's not built to be extensive and all-encompassing. On the same note, dragging-and-dropping files to make a deployable CMS is pretty exciting.
 
 ##Installation
-1. Clone this repository.
-2. Setup a virtualenv named `env` using `virtualenv env -p python3`.
-3. Launch the virtualenv `source env/bin/activate`.
-4. Install all requirements `pip install -r requirements.txt`.
+
+**Short Version**
+
+1. Clone this repository and switch into the directory `git clone git@github.com:alvinwan/Puhjiii.git && cd puhjiii`.
+2. Check that Python3 and MongoDB are installed `source check.sh`. If either is missing, see [Python3 Downloads](https://www.python.org/downloads/) or [Mongodb Official Guides](http://docs.mongodb.org/manual/installation/#installation-guides).
+3. Run the installation `source install.sh`.
+
+> To ensure that the system works as promised, run `env/bin/py.test tests`.
+
+**Long Version**
+In case something goes wrong, attempt these steps one by one.
+
+1. Clone this repository `git clone git@github.com:alvinwan/Puhjiii.git`.
+2. Change into the directory `cd puhjiii`.
+3. Setup a new virtual environment: `python3 -m venv env`.
+4. Start the virtual environment: `source env/bin/activate`.
 5. Create a new directory for the datastore `mkdir env/db`.
-6. Launch the server daemon `mongod --dbpath env/db`.
-7. In a new console, launch the server itself `env/bin/python run.py`.
+6. Install all requirements `pip install -r requirements.txt`.
+7. Build default settings `python3 setup.py build`.
+8. Launch the server daemon `mongod --dbpath env/db &`.
+9. Launch the server itself `env/bin/python run.py`.
+10. When finished, stop mongodb using `mongo 127.0.0.1/admin --eval "db.shutdownServer()"`.
 
-> To ensure that the system works as promised, run tests using `env/bin/py.test tests`.
+*Only steps 3, 9, and 10 are required for starting server in the future.*
 
-##Getting Started
-1. Click "Tell me about you."
-2. Fill out your desired administrator account information.
-3. Complete information about your database; leave empty for defaults.
-4. Click "Launch".
-5. Setup is complete.
+## Getting Started
+
+To start server, use `source activate.sh`. Point your browser to 'http://localhost:5000' and your local installation of Puhjiii is now running.
 
 ##Puhjiii Features
 Here are existing features, packed into this tiny program:
