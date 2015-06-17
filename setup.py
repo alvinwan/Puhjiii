@@ -3,25 +3,35 @@ from server.nest.libs import Plugin
 from server.plugins.code.libs import Template
 from mongoengine.errors import DoesNotExist
 from jinja2.exceptions import TemplateNotFound
-
-roles = [
-	('owner', ['access_nest', 'view_templates', 'modify_templates']),
-	('manager', ['access_nest', 'view_templates', 'modify_templates']),
-	('developer', ['access_nest', 'view_templates', 'modify_templates']),
-	('follower', ['access_nest'])
-]
+import importlib
 
 plugins = ['code', 'item', 'mold', 'page', 'plugin', 'preview', 'navbar', 'setting']
+
+permissions = {}
+
+for plugin in plugins:
+	module = importlib.import_module('server.plugins.%s' % plugin)
+	permissions[plugin] = getattr(module, 'permissions', [])
+
+roles = [
+	('owner', plugins),
+	('manager', ['item', 'page', 'preview', 'navbar']),
+	('developer', ['code', 'item', 'preview', 'navbar']),
+	('follower', ['preview', 'navbar'])
+]
 
 public_templates = ['index.html']
 
 
 def build(args):
 	global roles, plugins, public_templates
-	for role in roles:
-		Role(name=role[0]).load(permissions=role[1]).save()
 	for plugin in plugins:
 		Plugin(name=plugin).load(is_active=True).save()
+	for role in roles:
+		perms = ['access_nest']
+		for plugin in role[1]:
+			perms += permissions[plugin]
+		Role(name=role[0]).load(permissions=perms).save()
 	for template in public_templates:
 		path = 'public/'+template
 		Template(path=path).load(name=template.split('.')[0]).save()

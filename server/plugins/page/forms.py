@@ -22,9 +22,12 @@ class AddPageForm(PageForm):
 
 
 class EditPageForm(PageForm):
-	title_info = 'To edit the page\'s contents, click directly on the text you\'d' \
-	             ' like to edit. If you would like to edit the code for this page,' \
-	             ' [view templates](/nest/code).'
+	# general_info = 'For text elements, click directly on the element you\'d' \
+	#              ' like to edit. elements to see additional options: ' \
+	#              '(1) convert into a repeatable item (i.e., courses, posts, merchandise), ' \
+	#              '(2) convert into a reusable template partial (i.e., header, footer) or ' \
+	#              '(3) edit the HTML directly.'
+	template_info = 'If you would like to edit the code for this page, [view templates](/nest/code).'
 	
 	title = wtf.StringField('Page Title')
 	template = wtf.SelectField('Template')

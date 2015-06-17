@@ -11,4 +11,5 @@ Offers two modules:
 @author: Alvin Wan
 """
 
+permissions = ['access_preview', 'basic_preview', 'interactive_preview']
 path = 'preview'

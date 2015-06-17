@@ -1,4 +1,4 @@
-{% extends "nest/puhjiii.panel.html" %}
+{% extends "nest/puhjiii.list.html" %}
 {% set panel="list" %}
 {% block path %}<span class="nest-path-curr">Molds</span>{% endblock %}
 {% set cancel = url_for('nest.home') %}
@@ -8,7 +8,7 @@
 {% endblock %}
 {% set empty_note = 'No molds found. <a href="'+url_for('nest.mold_add')+'">Add a mold now.</a>' %}
 {% set items = molds %}
-{% block content %}
+{% block items %}
         <nav class="items-content">
             <ul>
                 {% for mold in molds %}

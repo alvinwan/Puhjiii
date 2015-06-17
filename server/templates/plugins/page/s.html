@@ -1,4 +1,4 @@
-{% extends "nest/puhjiii.panel.html" %}
+{% extends "nest/puhjiii.list.html" %}
 {% set panel="list" %}
 {% block path %}<span class="nest-path-curr">Pages</span>{% endblock %}
 {% set cancel = url_for('nest.home') %}
@@ -8,7 +8,7 @@
 {% endblock %}
 {% set empty_note = 'No pages found. <a href="'+url_for('nest.page_add')+'">Add a page now.</a>' %}
 {% set items = pages %}
-{% block content %}
+{% block items %}
         <nav>
             <ul>
                 {% for page in pages %}

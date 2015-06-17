@@ -2,6 +2,7 @@ from . import *
 from .libs import Item
 from flask import url_for
 
+requires = ['view_items']
 
 def process(data):
 	mold, item_mold = data.mold, data.item_mold

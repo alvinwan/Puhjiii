@@ -1,5 +1,7 @@
 from . import *
 
+requires = ['edit_code']
+
 def process(data):
 	ext = data.path.split('.')[-1]
 	try:

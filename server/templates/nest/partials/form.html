@@ -1,4 +1,7 @@
 {% if form %}
+{% if form["general_info"] %}
+{{ form["general_info"]|markdown|safe }}
+{% endif %}
 {% for k, v in form._fields.items() %}
                 <div>
                     {{ v.label }}

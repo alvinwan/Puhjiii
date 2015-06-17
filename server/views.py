@@ -20,7 +20,7 @@ from server.auth.libs import Allow, Alert
 from urllib.parse import urlparse
 
 
-def render(name, mod=None, repeats=0, markdown=True, **context):
+def render(name, mod=None, repeats=0, markdown=False, **context):
 	"""
 	Render a template.
 	:param name: template
@@ -33,9 +33,6 @@ def render(name, mod=None, repeats=0, markdown=True, **context):
 		for k, v in context.items():
 			if isinstance(v, str):
 				context[k] = Markup(mkd.markdown(v))
-			# if k == 'form':
-			# 	for e, a in getattr(alert.kwargs, 'form', {}).items():
-			# 		getattr(v, e).data = a
 	context['alert'] = Alert.check()
 	html = render_template(name, **context)
 	for i in range(repeats):
@@ -104,10 +101,11 @@ def permission_required(permission=None, dest='/'):
 	:return: decorator
 	"""
 	def decorator(f):
-		def helper():
+		def helper(*args, **kwargs):
 			if not Allow.ed(current_user, permission):
 				return redirect(dest)
-			return f()
+			return f(*args, **kwargs)
+		helper.__name__ = f.__name__
 		return helper
 	return decorator
 

@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from server import mod_nest, mod_public
 from server.auth.libs import Alert
 from server.plugins.page.libs import Page
-from server.views import render, context, render_error, redirect_error
+from server.views import render, context, render_error, redirect_error, permission_required
 from server.nest.libs import Nest
 from .libs import Item
 from server.plugins.mold.libs import Mold
@@ -35,6 +35,7 @@ def nest_items(item_mold, url, error):
 
 
 @mod_nest.route("/mold/<string:item_mold>")
+@permission_required('access_items')
 @login_required
 def mold(item_mold):
 	return nest_items(
@@ -44,6 +45,7 @@ def mold(item_mold):
 
 
 @mod_nest.route("/item/<string:item_mold>/<string:item_id>")
+@permission_required('access_items')
 @login_required
 def item(item_mold, item_id):
 	return nest_items(
@@ -66,6 +68,7 @@ def item_form(mold, item, form, plugins, forward, item_mold, error, alert, item_
 
 
 @mod_nest.route("/item/<string:item_mold>/<string:item_id>/edit", methods=['POST', 'GET'])
+@permission_required('access_items')
 @login_required
 def item_edit(item_mold, item_id):
 	try:
@@ -98,6 +101,7 @@ def item_edit(item_mold, item_id):
 
 
 @mod_nest.route("/item/<string:item_mold>/add", methods=['GET', 'POST'])
+@permission_required('access_items')
 @login_required
 def item_add(item_mold):
 	try:
@@ -126,6 +130,7 @@ def item_add(item_mold):
 
 
 @mod_nest.route("/item/<string:item_mold>/<string:item_id>/delete")
+@permission_required('access_items')
 @login_required
 def item_delete(item_mold, item_id):
 	try:
@@ -146,6 +151,7 @@ Public URLs
 """
 
 @mod_public.route("/<string:item_mold>")
+@permission_required('access_items')
 def items(item_mold):
 	try:
 		page = Page(url=item_mold).get()
@@ -163,6 +169,7 @@ def items(item_mold):
 
 @mod_public.route("/<string:item_mold>/<string:item_slug>")
 @mod_public.route("/<string:item_mold>/<string:item_id>/")
+@permission_required('access_items')
 def item(item_mold, item_slug=None, item_id=None):
 	try:
 		path, itms = Item.item(

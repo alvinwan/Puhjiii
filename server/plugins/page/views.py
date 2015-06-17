@@ -1,7 +1,7 @@
 from flask import request, redirect, url_for
 from flask_login import current_user, login_required
 from server.auth.libs import Alert
-from server.views import render, context, render_error, redirect_error
+from server.views import render, context, render_error, redirect_error, permission_required
 from server.nest.libs import Nest
 from server import mod_nest, mod_public
 from .libs import Page
@@ -16,6 +16,7 @@ from mongoengine.errors import NotUniqueError, DoesNotExist
 @mod_nest.route("/pages")
 @mod_nest.route("/page/")
 @mod_nest.route("/page/<path:url>")
+@permission_required('access_pages')
 @login_required
 def pages(url=''):
 	nest = Nest(current_user, request)
@@ -54,6 +55,7 @@ def page_form(page, form, plugins, error, alert):
 
 
 @mod_nest.route("/page/add", methods=['POST', 'GET'])
+@permission_required('access_pages')
 @login_required
 def page_add():
 	return page_form(
@@ -68,6 +70,7 @@ def page_add():
 
 
 @mod_nest.route("/page/edit/<string:id>", methods=['GET', 'POST'])
+@permission_required('access_pages')
 @login_required
 def page_edit(id):
 	try:
@@ -93,6 +96,7 @@ def page_edit(id):
 
 
 @mod_nest.route("/page/iedit/<string:id>", methods=['POST'])
+@permission_required('access_pages')
 @login_required
 def page_iedit(id):
 	try:
@@ -106,10 +110,14 @@ def page_iedit(id):
 			molds=request.form['molds'])
 		return redirect(url_for('nest.page_edit', id=id))
 	except DoesNotExist as e:
-		return redirect_error(str(e), url_for('nest.pages'))
+		message, url = str(e), url_for('nest.pages')
+	except RuntimeError as e:
+		message, url = str(e), url_for('nest.page_edit', id=id)
+	return redirect_error(message, url)
 
 
 @mod_nest.route("/page/delete/<string:id>")
+@permission_required('access_pages')
 @login_required
 def page_delete(id):
 	try:

@@ -4,7 +4,7 @@ from flask import make_response, request, redirect, url_for
 
 from server import mod_nest
 from server.nest.libs import Nest
-from server.views import render, context, redirect_error
+from server.views import render, context, redirect_error, permission_required
 from .forms import EditCodeForm, ImportCodeForm, UploadCodeForm
 from .libs import Template
 from server.auth.libs import File, Alert
@@ -21,6 +21,7 @@ def codes():
 
 @mod_nest.route("/api/code/")
 @mod_nest.route("/api/code/<path:path>")
+@permission_required('access_codes')
 @login_required
 def api_code(path=''):
 	if request.args.get('context', None):
@@ -30,6 +31,7 @@ def api_code(path=''):
 
 @mod_nest.route("/code/")
 @mod_nest.route("/code/<path:path>", methods=['GET', 'POST'])
+@permission_required('access_codes')
 @login_required
 def code(path='templates/public/index.html'):
 	nest = Nest(current_user, request)
@@ -50,6 +52,7 @@ def code(path='templates/public/index.html'):
 
 
 @mod_nest.route("/code/import", methods=['POST', 'GET'])
+@permission_required('access_codes')
 @login_required
 def code_import():
 	form = ImportCodeForm(request.form)
@@ -66,6 +69,7 @@ def code_import():
 
 
 @mod_nest.route("/code/upload", methods=['POST', 'GET'])
+@permission_required('access_codes')
 @login_required
 def code_upload():
 	form = UploadCodeForm(request.form)
@@ -73,7 +77,7 @@ def code_upload():
 	try:
 		if request.method == 'POST' and form.validate():
 			for file in request.files.values():
-				Template().upload(file, form.destination.data).save()
+				Template().upload(file, form.destination.data, form.override.data)
 				Alert('File "%s" uploaded.' % file.filename, class_='okay').log()
 				return redirect(url_for('nest.codes'))
 		nest.load_plugin('code.upload')

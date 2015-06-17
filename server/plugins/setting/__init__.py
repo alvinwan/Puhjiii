@@ -8,4 +8,5 @@ settings.
 @author: Alvin Wan
 """
 
+permissions = ['access_settings', 'view_settings']
 path = 'setting'

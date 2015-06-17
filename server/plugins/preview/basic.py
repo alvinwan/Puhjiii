@@ -5,6 +5,7 @@ from os.path import isdir, join, dirname as parent
 from flask import url_for
 from . import *
 
+requires = ['basic_preview']
 
 def process(obj):
 	"""

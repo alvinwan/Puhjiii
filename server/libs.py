@@ -120,7 +120,7 @@ class Puhjiii:
 		:return: self
 		"""
 		self.load(**kwargs)
-		self.filters = {k: getattr(self, k) for k, v in kwargs.items()}
+		self.filters = dict(kwargs.items())
 		return self
 	
 	def delete(self):

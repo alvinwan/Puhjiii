@@ -1,5 +1,6 @@
 from os import makedirs
 from os.path import exists
+from shutil import rmtree, Error
 from server.libs import Puhjiii
 from . import models
 
@@ -9,6 +10,7 @@ from loremipsum import get_sentence
 import re
 import string
 import random
+from html import unescape
 from werkzeug.utils import secure_filename
 from zipfile import ZipFile, is_zipfile
 
@@ -50,7 +52,7 @@ class Template(Puhjiii):
 			if tag not in Template.tags.keys():
 				Template.tags[tag] = re.compile('(<%s[\s\S]{0,}?)/>' % tag)
 			string = Template.tags[tag].sub('\g<1>>', string)
-		return extraneous.sub('<html>\g<1></html>', string)
+		return unescape(extraneous.sub('<html>\g<1></html>', string))
 
 	@staticmethod
 	def to_template(path):
@@ -85,7 +87,7 @@ class Template(Puhjiii):
 		prefix = ''.join([random.choice(string.ascii_letters) for _ in range(3)]) if prefix else ''
 		for child in soup.descendants:
 			if isinstance(child, element.NavigableString) \
-				and nonwhitespace.search(child):
+				and nonwhitespace.search(child) and '<!--' not in str(child.parent):
 				tags.append(child)
 		for tag in tags:
 			match = validstring.match(tag)
@@ -168,7 +170,7 @@ class Template(Puhjiii):
 		:param path:
 		:return:
 		"""
-		self.import_html(file.read(), path+file.filename)
+		self.import_html(file.read(), path+file.filename).save()
 		return self
 	
 	def upload_zip(self, file, path=None, override=True):
@@ -187,6 +189,12 @@ class Template(Puhjiii):
 		rel_dst = File.join('static', path)
 		src = File.abs(path, 'templates')
 		dst = File.abs(path, 'static')
+		
+		if exists(src):
+			if override:
+				rmtree(src)
+			else:
+				raise Error('Theme with destination already exists.')
 		
 		if not exists(dst):
 			makedirs(dst)

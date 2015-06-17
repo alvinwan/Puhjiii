@@ -5,7 +5,7 @@ from os.path import isdir, join, dirname as parent, relpath
 from flask import url_for
 from . import *
 
-requires = ['view_templates']
+requires = ['view_code']
 
 
 def process(obj):

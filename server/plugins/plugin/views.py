@@ -1,13 +1,14 @@
 from server import mod_nest
 from server.nest.libs import Nest
 from .libs import Plugin
-from server.views import context, render, redirect_error
+from server.views import context, render, redirect_error, permission_required
 from flask_login import login_required, current_user
 from flask import request, url_for, redirect
 
 from mongoengine.errors import DoesNotExist
 
 @mod_nest.route("/plugins")
+@permission_required('access_plugins')
 @login_required
 def plugins():
 	nest = Nest(current_user, request).load_plugin('plugin.s')
@@ -23,12 +24,14 @@ def plugin_update(plugin_name, **kwargs):
 
 
 @mod_nest.route("/plugin/<string:plugin_name>/deactivate")
+@permission_required('access_plugins')
 @login_required
 def plugin_deactivate(plugin_name):
 	return plugin_update(plugin_name, is_active=False)
 
 
 @mod_nest.route("/plugin/<string:plugin_name>/activate")
+@permission_required('access_plugins')
 @login_required
 def plugin_activate(plugin_name):
 	return plugin_update(plugin_name, is_active=True)

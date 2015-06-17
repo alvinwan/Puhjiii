@@ -2,7 +2,7 @@ from flask import request, redirect, url_for
 from flask_login import current_user, login_required
 from server.auth.libs import Alert
 
-from server.views import render, context, redirect_error
+from server.views import render, context, redirect_error, permission_required
 from server.nest.views import mod_nest
 from server.nest.libs import Nest
 from server.plugins.mold.libs import Mold
@@ -13,6 +13,7 @@ from mongoengine.errors import NotUniqueError, DoesNotExist
 
 @mod_nest.route("/molds")
 @login_required
+@permission_required('access_molds')
 def molds():
 	nest = Nest(current_user, request)
 	nest.load_plugin('mold.s')
@@ -41,6 +42,7 @@ def mold_form(form, mold, forward, plugin, error, alert):
 
 @mod_nest.route("/mold/add", methods=['GET', 'POST'])
 @login_required
+@permission_required('access_molds')
 def mold_add():
 	return mold_form(
 		form=AddMoldForm(request.form),
@@ -53,6 +55,7 @@ def mold_add():
 
 @mod_nest.route("/mold/<string:item_mold>/edit", methods=['GET', 'POST'])
 @login_required
+@permission_required('access_molds')
 def mold_edit(item_mold):
 	error=url_for('nest.mold_edit', item_mold=item_mold)
 	try:
@@ -70,6 +73,7 @@ def mold_edit(item_mold):
 
 @mod_nest.route("/mold/<string:item_mold>/delete")
 @login_required
+@permission_required('access_molds')
 def mold_delete(item_mold):
 	try:
 		Mold(name=item_mold).delete()

@@ -8,3 +8,4 @@ Handles all items.
 """
 
 path = 'item'
+permissions = ['access_items', 'add_item', 'edit_item', 'view_items']

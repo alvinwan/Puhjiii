@@ -21,12 +21,15 @@ from server.auth.libs import File
 from flask import render_template, url_for
 from flask_login import current_user
 import re
+from html import unescape
 
 from . import *
 from . import basic
 from .forms import EditPageInteractiveForm
 from mongoengine.errors import DoesNotExist
 
+
+requires = ['interactive_preview']
 
 def process(data):
 	context = iedit(data)
@@ -53,7 +56,8 @@ def iedit(data):
 	return context
 
 whitespace = re.compile('>\s+<')
-
+props = re.compile('<([\S]+?)([\s][\S\s]+?)?>')
+validtag = re.compile('{{\s?(?P<tag>[A-z0-9_]+)\s?}}')
 
 def unjsonify(string, default=''):
 	if string:
@@ -72,11 +76,12 @@ def postprocess(html, template, host, partials='{"partials":[]}', molds='{"molds
 	:param host: obj that uses the template
 	:return: data
 	"""
+	html = unescape(html)
 	partials = unjsonify(partials, {'partials': []})['partials']
 	molds = unjsonify(molds, {'molds': []})['molds']
 	data, molds, templates = parse_html(
 		File.read('templates/'+template.path), 
-		html, partials, molds, template_path=template.path, template_obj=template)
+		html, partials, molds, template_path=template.path)
 	if templates:
 		first = templates[0]
 		process_templates(templates)
@@ -95,15 +100,18 @@ def regex_ready_html(html):
 		- Isolate all control structures and search for each
 			individually.
 		+ Replace all statements with valid regex match groups
+		+ Escape regex characters in the HTML
+		+ Generate attribute-agnostic regex
 	:param html: the source to edit
 	:return: html
 	"""
-	chars = ['?', '[', '(']
-	validtag = re.compile('{{\s?(?P<tag>[A-z0-9_]+)\s?}}')
+	chars = ['?', '[', ']', '(', ')', '+', '.', '*']
 	for char in chars:
 		html = html.replace(char, '\\%s' % char)
-	html = whitespace.sub('[\s\S]{0,}?>\s{0,}<', html)
-	return validtag.sub('(?P<\g<tag>>[\S\s]+?)', html).replace('/', '\/').replace('\n', '')
+	html = whitespace.sub('>\s{0,}<', html)
+	html = props.sub('<\g<1>[\s\S]{0,}?>', html)
+	html = validtag.sub('(?P<\g<tag>>[\S\s]+?)', html)
+	return html.replace('/', '\/').replace('\n', '')
 
 
 def process_templates(templates):
@@ -130,7 +138,7 @@ def process_items(molds):
 			Item(mold=mold, author=current_user, info=item).save()
 
 
-def parse_html(template, html, partials=[], molds=[], template_path='', template_obj=None):
+def parse_html(template, html, partials=[], molds=[], template_path=''):
 	"""
 	At save, the source is processed:
 	+ Using the original template, regex match for all groups
@@ -147,7 +155,7 @@ def parse_html(template, html, partials=[], molds=[], template_path='', template
 	if is_new:
 		return None, molds, partials
 	else:
-		return extract_data(regex, html, template_obj) or {}, molds, None
+		return extract_data(regex, html) or {}, molds, None
 
 
 def is_very_diff(original, new, regex, partials, molds):
@@ -163,7 +171,7 @@ def is_very_diff(original, new, regex, partials, molds):
 	return len(partials) > 0 or len(molds) > 0
 
 
-def extract_data(regex, html, template):
+def extract_data(regex, html):
 	"""
 	Return dictionary of key, value pairs from regex and source
 	:param regex: matching
@@ -171,8 +179,10 @@ def extract_data(regex, html, template):
 	:return: dictionary of data
 	"""
 	groups = regex.match(html)
-	return groups.groupdict() if groups else \
-		({} or getattr(template, 'defaults', None))
+	if groups:
+		return groups.groupdict()
+	else:
+		raise RuntimeError('Could not save changes. Portion of page may not be editable.')
 	
 	
 def extract_partials(html, partials, template_path):
@@ -193,7 +203,7 @@ def extract_partials(html, partials, template_path):
 	templates.append(main)
 	for partial in partials:
 		html, path = partial['html'], 'public/partials/%s.html' % partial['name']
-		regex = re.compile(html)
+		regex = re.compile(regex_ready_html(html))
 		main['html'] = regex.sub('{% include "'+path+'" %}', main['html'])
 		templates.append({
 			'name': partial['name'],
@@ -220,10 +230,11 @@ def extract_items(html, molds):
 	:return: items
 	"""
 	for mold in molds:
-		subhtml = mtchtml = mold['html']
-		soup, fields = Template.to_defaults(BeautifulSoup(subhtml))
+		subhtml = mtchtml = regex_ready_html(mold['html'])
+		soup, fields = Template.to_defaults(BeautifulSoup(mold['html']))
 		mold['template'] = soup.prettify()
 		for k, v in fields.items():
+			v = regex_ready_html(v)
 			mtchtml = mtchtml.replace(v, '[\S\s]+?')
 			subhtml = subhtml.replace(v, '(?P<'+k+'>[\S\s]+?)')
 		mtchtml = mtchtml.replace('><', '>\s{0,}<')
