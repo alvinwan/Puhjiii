@@ -57,11 +57,7 @@ Here are existing features, packed into this tiny program:
 ###Editing Webpages
 + upload and import new templates
 + click anywhere on rendered page to edit content
-+ convert elements into repeatable items (e.g., post, comment)
-+ convert elements into reusable partials (e.g., header, footer)
 + access the code directly, when needed
-- drag-and-drop to rearrange elements on page
-- copy-and-paste or delete elements
 
 ###Website Management
 + add a new "mold" for a new type of content (e.g., "mold" for all posts)
