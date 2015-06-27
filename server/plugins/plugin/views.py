@@ -27,6 +27,9 @@ def plugin_update(plugin_name, **kwargs):
 @permission_required('access_plugins')
 @login_required
 def plugin_deactivate(plugin_name):
+	if plugin_name in ['code', 'item', 'mold', 'page', 'plugin', 'preview', 'navbar', 'setting']:
+		return redirect_error('Plugin "%s" is essential to Puhjiii\'s function; it cannot be deactivated.' % plugin_name,
+		                      url_for('nest.plugins'))
 	return plugin_update(plugin_name, is_active=False)
 
 

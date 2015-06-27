@@ -36,23 +36,27 @@ def register():
 	if request.method == 'POST':
 		try:
 			form.validate()
+			try:
+				User.model.objects().get()
+				role_name = 'follower'
+			except DoesNotExist:
+				role_name = 'owner'
+
 			user = User(
 				name=form.name.data,
 				email=form.email.data,
 				password=bcrypt.generate_password_hash(form.password.data),
-				role=Role(name='follower').get()
+				role=Role(name=role_name).get()
 			).save()
 			if login_user(user):
 				return redirect(url_for('nest.home'))
 			else:
 				return redirect(url_for('auth.login'))
-		except ValidationError as e:
+		except (DoesNotExist, ValidationError) as e:
 			message = str(e)
 		except NotUniqueError:
 			message = 'Email address already registered. [login?](/login)'
-		except DoesNotExist:
-			message = 'We could not register your account. Are you the administrator? If so, did you run "python3 setup.py build"?'
-	return render('register.html', mod='auth', **locals())
+	return render('register.html', mod='auth', markdown=True, **locals())
 
 
 @mod_auth.route("/logout")

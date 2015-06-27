@@ -183,7 +183,7 @@ class Template(Puhjiii):
 		:param path: 
 		:return:
 		"""
-		zip = ZipFile(file)
+		zip = file if isinstance(file, ZipFile) else ZipFile(file)
 		path = path or File.join('public', file.filename.replace('.zip', ''))
 		rel_src = File.join('templates', path)
 		rel_dst = File.join('static', path)
@@ -195,12 +195,18 @@ class Template(Puhjiii):
 				rmtree(src)
 			else:
 				raise Error('Theme with destination already exists.')
+		else:
+			makedirs(src)
 		
 		if not exists(dst):
 			makedirs(dst)
 		
-		moved = []
-		for info in zip.infolist():
+		moved, items = [], zip.infolist()
+		
+		if len(items) == 1:
+			raise Error('Please zip the files themselves, and not the directory that contains them.')
+			
+		for info in items:
 			name, file = info.filename, File.join(src, info.filename)
 			if not name.endswith('.html'):
 				zip.extract(info.filename, dst)

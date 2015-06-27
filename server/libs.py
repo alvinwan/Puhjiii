@@ -62,9 +62,10 @@ class Puhjiii:
 			if k in self.model._fields.keys() \
 				and isinstance(self.model._fields[k], db.ReferenceField)\
 				and not isinstance(v, (bytes, str, ObjectId)):
-				v = getattr(v, 'id', None)
-			# if isinstance(v, Puhjiii):
-			# 	v = v.model(**v.data()).to_dbref()
+				if hasattr(v, 'model'):
+					v = v.model(**v.data()).to_dbref()
+				else:
+					v = getattr(v, 'id', None)
 			setattr(self, k, v)
 		return self	
 		
@@ -120,7 +121,7 @@ class Puhjiii:
 		:return: self
 		"""
 		self.load(**kwargs)
-		self.filters = dict(kwargs.items())
+		self.filters = dict(self.data())
 		return self
 	
 	def delete(self):

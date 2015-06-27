@@ -1,6 +1,8 @@
-from server.auth.libs import Role, User
+from zipfile import ZipFile
+from server.auth.libs import Role, User, File
 from server.nest.libs import Plugin
 from server.plugins.code.libs import Template
+from server.plugins.page.libs import Page
 from mongoengine.errors import DoesNotExist
 from jinja2.exceptions import TemplateNotFound
 import importlib
@@ -20,7 +22,7 @@ roles = [
 	('follower', ['preview', 'navbar'])
 ]
 
-public_templates = ['index.html']
+public_templates = ['index.html', 'contact.html']
 
 
 def build(args):
@@ -32,9 +34,16 @@ def build(args):
 		for plugin in role[1]:
 			perms += permissions[plugin]
 		Role(name=role[0]).load(permissions=perms).save()
+	file = ZipFile('2015.zip')
+	Template().upload_zip(file)
 	for template in public_templates:
-		path = 'public/'+template
-		Template(path=path).load(name=template.split('.')[0]).save()
+		path = 'public/2015/'+template
+		title = template.split('.')[0]
+		temp = Template(path=path).get()
+		Page(title=title,
+		          template=path,
+		          url=(title if title != 'index' else '/'),
+		          info=temp.defaults).save()
 	print('Build complete.')
 
 
