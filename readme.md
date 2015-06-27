@@ -1,5 +1,5 @@
-#[Puhjiii](http://braiiin.com/puhjiii)
-Puhjiii is a lightweight content management system. Get it setup on your local system and even for production use in just a matter of seconds.
+#Puhjiii
+Puhjiii is a lightweight content management system. Get it setup on your local system and even for production use in just a matter of seconds. Made with 100% [Alvin Wan](http://alvinwan.com).
 
 ##Why Puhjiii?
 Puhjiii was designed to make developers' lives easier; easily add HTML statics, and Puhjiii will give users ample control through a UI. In this way, clients can edit the page's content without touching a single line of code. Even better, developers can port statics into a CMS, without touching a single line of code.
