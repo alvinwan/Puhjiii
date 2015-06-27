@@ -68,7 +68,7 @@ Here are existing features, packed into this tiny program:
 
 ##More
 
-For more information, see the official Puhjiii website at [braiiin.com/puhjiii](http://braiiin.com/puhjiii), and here is the [chubby bird](http://drbl.in/oRxN) that started it all.
+Here is the [chubby bird](http://drbl.in/oRxN) that started it all.
 
 ##Developers
 This section covers relevant code information and is written to address a technically-adept audience.
