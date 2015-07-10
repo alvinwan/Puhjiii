@@ -59,13 +59,22 @@ class Puhjiii:
 		:return: self
 		"""
 		for k, v in kwargs.items():
-			if k in self.model._fields.keys() \
-				and isinstance(self.model._fields[k], db.ReferenceField)\
-				and not isinstance(v, (bytes, str, ObjectId)):
-				if hasattr(v, 'model'):
+			if k == 'id' or (k in self.model._fields.keys() \
+                 and isinstance(self.model._fields[k], db.ReferenceField)):
+				if idify or k == 'id':
+					if not isinstance(v, ObjectId):
+						if isinstance(v, str):
+							v = ObjectId(v)
+						else:
+							v = getattr(v, 'id')
+				elif issubclass(v.__class__, db.Document):
+					v = v.to_dbref()
+				elif isinstance(v, str):
+					v = DBRef(k, ObjectId(v))
+				elif hasattr(v, 'model'):
 					v = v.model(**v.data()).to_dbref()
 				else:
-					v = getattr(v, 'id', None)
+					v = None
 			setattr(self, k, v)
 		return self	
 		

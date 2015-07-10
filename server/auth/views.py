@@ -36,11 +36,10 @@ def register():
 	if request.method == 'POST':
 		try:
 			form.validate()
-			try:
-				User.model.objects().get()
-				role_name = 'follower'
-			except DoesNotExist:
+			if User.model.objects().all().count() == 0:
 				role_name = 'owner'
+			else:
+				role_name = 'follower'
 
 			user = User(
 				name=form.name.data,
