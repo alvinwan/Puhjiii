@@ -68,7 +68,7 @@ Here are existing features, packed into this tiny program:
 
 ##More
 
-For more information, see the official Puhjiii website at [braiiin.com/puhjiii](http://braiiin.com/puhjiii), and here is the [chubby bird](http://drbl.in/oRxN) that started it all.
+Here is the [chubby bird](http://drbl.in/oRxN) that started it all.
 
 ##Developers
 This section covers relevant code information and is written to address a technically-adept audience.
@@ -111,4 +111,4 @@ Themes can be easily imported from static files; the following covers the basics
 
 ###Current Development
 
-Puhjiii took just over two weeks to build, but I will most likely not continue maintaining this project. The chubby program is ripe with features, or at least filled with *enough* features that it's achieved its purpose : ameliorate a web designer's pain and still give clients a (disputably) pretty UI. If you are interested in picking up this project, feel free to contact me at hi@alvinwan.com.
+Puhjiii took just over two weeks to build, but I will most likely not continue maintaining this project. The chubby program is ripe with features, or at least filled with *enough* features that it's achieved its purpose : ameliorate a web designer's pain and still give clients a (disputably) pretty UI. If you are interested in picking up this project, feel free to contact me at hi(at)alvinwan.com.
